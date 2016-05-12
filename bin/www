@@ -20,6 +20,13 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+//在项目启动时候启动socket.io的监听模块
+var io = require('socket.io')(server);
+var channel = require('../realtime/channel');
+
+io.on('connection', function (socket) {
+  channel.handleNewChannel(socket);
+});
 
 /**
  * Listen on provided port, on all network interfaces.

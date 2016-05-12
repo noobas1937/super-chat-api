@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="user-scalable=no">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1">
+    <title>jznet demo</title>
+    <script src="./underscore-min.js"></script>
+    <!--<script src="./promise.min.js"></script>-->
+    <script src="./promise-6.1.0.js"></script>
+    <!-- 引入插件，兼容低 IE8+ 等低版本浏览器，注意看下面的注释。如果不需要兼容，可以去掉这部分。 -->
+    <!--[if lt IE 10]>
+    <script src="./es5-shim.min.js"></script>
+    <script type="text/javascript" src="./plugin/web-socket-js/swfobject.js"></script>
+    <script type="text/javascript" src="./plugin/web-socket-js/web_socket.js"></script>
+    <script type="text/javascript">
+        // 设置变量，配置插件中 WebSocketMain.swf 的引用路径
+        WEB_SOCKET_SWF_LOCATION = "./plugin/web-socket-js/WebSocketMain.swf";
+        WEB_SOCKET_DEBUG = true;
+    </script>
+    <![endif]-->
+    <!-- 引入插件部分结束 -->
+    <!--<script src="./reconnecting-websocket.min.js"></script>-->
+    <!--<script src="./jz-rpc.js"></script>-->
+    <script src="./socket.io.js"></script>
+    <!--<script src="./AV.realtime.js"></script>-->
+    <!--<script src="./jznet.realtime.js"></script>-->
+    <script>
+        window.jzRealtimeHosts = ['ws://localhost:3000/'];
+    </script>
+    <script src="./jznode.realtime.js"></script>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            padding-top: 20px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        h1 {
+            font-size: 22px;
+        }
+
+        input {
+            padding: 2px 3px;
+            width: 100px;
+            border: 1px solid #ccc;
+            margin: 5px;
+        }
+
+        a {
+            color: #00f;
+        }
+
+        .btn {
+            height: 22px;
+            line-height: 22px;
+            padding: 1px 10px;
+            background-color: #2C97E8;
+            color: #fff;
+            display: inline-block;
+            cursor: pointer;
+            transition:opacity 0.8s;
+        }
+        .btn:hover {
+            opacity: 0.6;
+        }
+        .btn:active {
+            opacity: 1;
+        }
+
+        .strong {
+            color: #f00;
+        }
+
+        .item {
+            margin: 10px 0px;
+        }
+
+        .item p {
+            margin: 5px;
+        }
+
+        .input-send {
+            width: 350px;
+        }
+
+        .change-cid {
+            margin: 20px auto;
+            border: 1px solid #ae0000;
+            max-width: 512px;
+            width: 88%;
+            padding: 10px;
+        }
+
+        .change-cid input {
+            width: 200px;
+        }
+
+        .print-wall {
+            overflow: auto;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #888;
+            height: 392px;
+            max-width: 800px;
+            width: 84%;
+            text-align: left;
+        }
+
+        .print-wall p {
+            margin: 10px 0px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<h1>Hello, world!</h1>
+<div class="item">
+    <label>聊天室ID:</label>
+    <input type="text" id="room-id-input">
+    <button id="create-room-btn" class="btn">创建聊天室</button>
+    <label>您的昵称：</label>
+    <input id="input-name" type="text">
+    <div id="open-btn" class="btn">连接服务器</div>
+</div>
+<div class="item">
+    <div id="print-wall" class="print-wall"></div>
+</div>
+<div class="item">
+    <label>输入信息：</label>
+    <input id="input-send" class="input-send" type="text">
+    <div id="send-btn" class="btn">发送</div>
+</div>
+<div class="item">
+    <label>操作: </label>
+    <button id="show-online-users">查看在线用户</button>
+</div>
+<script src="./realtime-demo.js"></script>
+</body>
+</html>

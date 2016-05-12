@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+        <html>
+<head>
+    <meta charset="utf-8"/>
+    <title>jznet demo</title>
+    <script src="./underscore-min.js"></script>
+    <script src="./promise.min.js"></script>
+    <!-- 引入插件，兼容低 IE8+ 等低版本浏览器，注意看下面的注释。如果不需要兼容，可以去掉这部分。 -->
+    <!--[if lt IE 10]>
+    <script type="text/javascript" src="./plugin/web-socket-js/swfobject.js"></script>
+    <script type="text/javascript" src="./plugin/web-socket-js/web_socket.js"></script>
+    <script type="text/javascript">
+        // 设置变量，配置插件中 WebSocketMain.swf 的引用路径
+        WEB_SOCKET_SWF_LOCATION = "./plugin/web-socket-js/WebSocketMain.swf";
+    </script>
+    <![endif]-->
+    <!-- 引入插件部分结束 -->
+    <script src="./reconnecting-websocket.min.js"></script>
+    <script src="./jz-rpc.js"></script>
+    <script src="./AV.realtime.js"></script>
+    <script src="./jznet.realtime.js"></script>
+</head>
+<body>
+<h1>Hello, world!</h1>
+<script src="./demo.js"></script>
+</body>
+</html>
