@@ -1,7 +1,8 @@
 var redis = require('redis'),
     consts = require('./consts'),
     Q = require('bluebird'),
-    affairRealationKey = 'affair';
+    affairRelationKey = 'affair',
+    friendRelationKey = 'friend';
 
 Q.promisifyAll(redis.RedisClient.prototype);
 Q.promisifyAll(redis.Multi.prototype);
@@ -15,7 +16,7 @@ var redisClient = redis.createClient(consts.redis_uri);
 
 exports.setPeerAffairRelationCache = function (userId1, userId2) {
     var value = getCacheContent(userId1, userId2);
-    return redisClient.sadd(affairRealationKey, value);
+    return redisClient.sadd(affairRelationKey, value);
 };
 
 function getCacheContent(userId1, userId2){
@@ -25,7 +26,7 @@ function getCacheContent(userId1, userId2){
 exports.ifPeerAffairRelation = function (userId1, userId2) {
     var value = getCacheContent(userId1, userId2);
 
-    redisClient.sismemberAsync(affairRealationKey, value).
+    redisClient.sismemberAsync(affairRelationKey, value).
         then(function(res){
             if(res == 1){//如果在缓存中确认两人在同一个affair中
                 return new Promise(function(resolve, reject){
@@ -33,7 +34,7 @@ exports.ifPeerAffairRelation = function (userId1, userId2) {
                 });
             }else{
                 //TODO 调用java后台查询两人是否在同一affair中
-                //TODO 如果在的话则将两者的关系加入到cache中
+                //TODO 如果在的话则将两者的事务关系加入到cache中
                 if(true){
                     exports.setPeerAffairRelationCache(userId1, userId2);
                     return new Promise(function(resolve, reject){
@@ -48,4 +49,44 @@ exports.ifPeerAffairRelation = function (userId1, userId2) {
     });
 
 };
+
+/**
+ * 向缓存中添加好友关系项
+ * @param userId1
+ * @param userId2
+ * @returns {*}
+ */
+exports.setPeerFriendRelationCache = function (userId1, userId2) {
+    var value = getCacheContent(userId1, userId2);
+    return redisClient.saddAsync(friendRelationKey, value);
+}
+
+exports.ifPeerFriendRelation = function (userId1, userId2) {
+    var value = getCacheContent(userId1, userId2);
+
+    redisClient.sismemberAsync(value)
+        .then(function (res) {
+            if(res == 1){//如果在缓存中确认两人在同一个affair中
+                return new Promise(function(resolve, reject){
+                    resolve(true);
+                });
+            }else{
+                //TODO 调用java后台查询两人是否为朋友关系
+                //TODO 如果在的话则将两者的好友关系加入到cache中
+                if(true){
+                    exports.setPeerFriendRelationCache(userId1, userId2);
+                    return new Promise(function(resolve, reject){
+                        resolve(true);
+                    });
+                }else{
+                    return new Promise(function(resolve, reject){
+                        resolve(false);
+                    });
+                }
+
+            }
+        });
+}
+
+
 

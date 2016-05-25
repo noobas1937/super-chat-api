@@ -2,95 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e0ed130e-dc23-4e8b-9c1e-ca0b507ae6cd" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/readtime/channel.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/readtime/test.js" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/any.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/assert.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/async.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/bind.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/bluebird.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/call_get.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/cancel.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/captured_trace.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/catch_filter.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/context.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/debuggability.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/direct_resolve.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/each.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/errors.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/es5.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/filter.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/finally.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/generators.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/join.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/map.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/method.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/nodeify.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/progress.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/promise.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/promise_array.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/promise_resolver.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/promisify.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/props.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/queue.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/race.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/reduce.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/schedule.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/settle.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/some.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/synchronous_inspection.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/thenables.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/timers.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/using.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/main/util.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/.nyc_output/15912.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/.nyc_output/15922.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/.nyc_output/15924.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/.nyc_output/15926.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/.nyc_output/15943.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/.nyc_output/15947.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/.nyc_output/15949.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/.travis.yml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/connection_breaker.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/__root__/index.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/__root__/index.js.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/base.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/index.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/lib/commands.js.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/lib/index.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/lib/parser/hiredis.js.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/lib/parser/index.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/lib/parser/javascript.js.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/lib/queue.js.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/lib/to_array.js.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/lib/util.js.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/prettify.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/prettify.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/sort-arrow-sprite.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov-report/sorter.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/coverage/lcov.info" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/lib/parser/hiredis.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/lib/parser/javascript.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/lib/queue.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/lib/to_array.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/node_modules/redis/lib/util.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/bluebird/LICENSE" afterPath="$PROJECT_DIR$/node_modules/bluebird/LICENSE" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/bluebird/README.md" afterPath="$PROJECT_DIR$/node_modules/bluebird/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/bluebird/changelog.md" afterPath="$PROJECT_DIR$/node_modules/bluebird/changelog.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.js" afterPath="$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.min.js" afterPath="$PROJECT_DIR$/node_modules/bluebird/js/browser/bluebird.min.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/bluebird/package.json" afterPath="$PROJECT_DIR$/node_modules/bluebird/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/redis/.npmignore" afterPath="$PROJECT_DIR$/node_modules/redis/.npmignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/redis/README.md" afterPath="$PROJECT_DIR$/node_modules/redis/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/redis/changelog.md" afterPath="$PROJECT_DIR$/node_modules/redis/changelog.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/redis/index.js" afterPath="$PROJECT_DIR$/node_modules/redis/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/redis/lib/commands.js" afterPath="$PROJECT_DIR$/node_modules/redis/lib/commands.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/redis/package.json" afterPath="$PROJECT_DIR$/node_modules/redis/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/readtime/caches.js" afterPath="$PROJECT_DIR$/readtime/caches.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/readtime/models.js" afterPath="$PROJECT_DIR$/readtime/models.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/webapi.js" afterPath="$PROJECT_DIR$/routes/webapi.js" />
     </list>
     <ignored path="super-chat-new.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -121,11 +34,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="caches.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="caches.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/readtime/caches.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="612">
-              <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+            <state relative-caret-position="177">
+              <caret line="63" column="59" selection-start-line="63" selection-start-column="59" selection-end-line="65" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -141,7 +54,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="true">
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/package.json">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="240">
@@ -415,16 +328,16 @@
       <workItem from="1463451821332" duration="2973000" />
       <workItem from="1463713367121" duration="2637000" />
       <workItem from="1463817168802" duration="452000" />
-      <workItem from="1464142208985" duration="4003000" />
+      <workItem from="1464142208985" duration="5846000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="19286000" />
+    <option name="totallyTimeSpent" value="21129000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2494043" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -433,7 +346,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3260274" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3260274" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -794,22 +707,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/readtime/test.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="21" selection-start-line="12" selection-start-column="21" selection-end-line="12" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/readtime/caches.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/readtime/consts.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -830,6 +727,22 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="16" column="23" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/readtime/test.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="21" selection-start-line="12" selection-start-column="21" selection-end-line="12" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/readtime/caches.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="63" column="59" selection-start-line="63" selection-start-column="59" selection-end-line="65" selection-end-column="0" />
           <folding />
         </state>
       </provider>
