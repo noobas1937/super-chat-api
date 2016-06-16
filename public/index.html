@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+<title>Chat Room</title>
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="chat.js"></script>
+	<link href="chat.css" rel="stylesheet"/>
+</head>
+<body>
+    <h1>Chat Room</h1>
+	<div id="chat">
+		<ul id="messages"></ul>
+		<form id="idForm">
+			<span>请输入你的userId:</span>
+			<input type="text" id="userId"/>
+			<button>确定</button>
+		</form>
+		<form id="form">
+			<input type="text" id="input"/>
+			<input type="text" id="toUserId"/>
+			<button>Send</button>
+		</form>
+	</div>
+</body>
+</html>

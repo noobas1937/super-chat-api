@@ -25,6 +25,7 @@ var io = require('socket.io')(server);
 var channel = require('../realtime/channel');
 
 io.on('connection', function (socket) {
+  console.log("Someone connected!!!!!!!!!!!!");
   channel.handleNewChannel(socket);
 });
 
