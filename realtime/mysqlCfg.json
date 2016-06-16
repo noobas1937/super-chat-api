@@ -1,0 +1,7 @@
+{
+  "host": "rm-bp1943x791y4e3z21.mysql.rds.aliyuncs.com",
+  "database": "super_id",
+  "user": "superid",
+  "password": "superid",
+  "port": "3306"
+}
