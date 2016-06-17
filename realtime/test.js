@@ -9,11 +9,11 @@ var redisClient = redis.createClient(consts.redis_uri);
 
 redisClient.sadd(affairRealationKey, "1");
 redisClient.sadd(affairRealationKey, "2");
-redisClient.saddAsync(affairRealationKey, "3").then(function(res){
-    console.log(res);
-});
+// redisClient.saddAsync(affairRealationKey, "3").then(function(res){
+//     console.log(res);
+// });
 
-redisClient.scard(affairRealationKey,showData);
+redisClient.smembers('a',showData);
 
 
 
