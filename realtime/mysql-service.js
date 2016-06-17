@@ -30,11 +30,12 @@ exports.getGroupMembers = function(groupId){
 
 /**
  * 判断两个用户是否在同一个事务中
- * @param affairId
  * @param roleId_1
  * @param roleId_2
+ * @param affairId
+ * @returns {Promise}
  */
-exports.ifInSameAffair = function(affairId, roleId_1, roleId_2){
+exports.ifInSameAffair = function(roleId_1, roleId_2, affairId){
 
     return new Promise(function (resolve, reject) {
         //TODO AND后面部分可以用'IN'语句来实现但是传递参数的时候遇到问题待解决

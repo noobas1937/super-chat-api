@@ -6,15 +6,6 @@ var mongoose = require('mongoose')
 
 mongoose.connect(consts.mongo_uri); //连接mongodb数据库
 
-//设置redis服务器地址和错误事件
-// var pubRedisClient = redis.createClient(consts.redis_uri);
-// var subRedisClient = redis.createClient(consts.redis_uri);
-// pubRedisClient.on("error", function (err) {
-//     console.log("Error " + err);
-// });
-// subRedisClient.on("error", function (err) {
-//     console.log("Error " + err);
-// });
 
 var Schema = mongoose.Schema;
 
@@ -31,10 +22,6 @@ var MessageSchema = new Schema({
 });
 
 var Message = mongoose.model('Message', MessageSchema, 'Messages');
-
-var RoomSchema = new Schema({
-
-});
 
 exports.Message = Message;
 

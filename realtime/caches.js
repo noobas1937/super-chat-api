@@ -13,6 +13,9 @@ Q.promisifyAll(redis.Multi.prototype);
 
 var redisClient = redis.createClient(consts.redis_uri);
 
+
+//TODO 事务关系以及好友关系的缓存结构可能可以进一步优化
+
 /**
  * 向缓存中添加用户之间的affair关系
  * @param roleId_1
@@ -20,13 +23,9 @@ var redisClient = redis.createClient(consts.redis_uri);
  * @returns {*}
  */
 exports.setPeerAffairRelationCache = function (roleId_1, roleId_2, affairId) {
-    var value = getCacheContent(roleId_1, roleId_2, affairId);
-    return redisClient.sadd(affairRelationKey, affairId+value);
-};
-
-//TODO 确认这样比较字符串是否会有问题
-function getCacheContent(roleId_1, roleId_2){
-    return roleId_1 >= roleId_2 ? (roleId_1 + '@' + roleId_2) : (roleId_2 + '@' + roleId_1);
+    var value = getCacheContentUtil(roleId_1, roleId_2);
+    value += ('@' + affairId);
+    return redisClient.saddAsync(affairRelationKey, value); //向缓存中添加新的关系项
 };
 
 /**
@@ -35,30 +34,33 @@ function getCacheContent(roleId_1, roleId_2){
  * @param roleId_2
  */
 exports.ifPeerAffairRelation = function (roleId_1, roleId_2, affairId) {
-    var value = affairId + getCacheContent(roleId_1, roleId_2);
 
-    redisClient.sismemberAsync(affairRelationKey, value).
-        then(function(res){
-            if(res == 1){//如果在缓存中确认两人在同一个affair中
-                return new Promise(function(resolve, reject){
-                    resolve(true);
-                });
+    var value = getCacheContentUtil(roleId_1, roleId_2);
+    value += ('@' + affairId);
+
+    return new Promise(function (resolve, reject) {
+        redisClient.sismember(affairRelationKey, value, function (error, res) {
+            if(error){
+                reject(error);
             }else{
-                //TODO 调用java后台查询两人是否在同一affair中
-                //TODO 如果在的话则将两者的事务关系加入到cache中
-                if(true){
-                    exports.setPeerAffairRelationCache(roleId_1, roleId_2, affairId);
-                    return new Promise(function(resolve, reject){
-                        resolve(true);
-                    });
-                }else{
-                    return new Promise(function(resolve, reject){
-                        resolve(false);
-                    });
+                if(res ==1){
+                    resolve(true);
+                }else{   //如果在缓存中没有查到该关系项则去Mysql数据库中查询
+                    mysqlService.ifInSameAffair(roleId_1, roleId_2, affairId)
+                        .then(function (res) {
+                            if(res){     //如果在Mysql数据库中查询到在同一个事务中则添加到缓存中
+                                exports.setPeerAffairRelationCache(roleId_1, roleId_2, affairId);
+                                resolve(true);
+                            }else{
+                                resolve(false);
+                            }
+                        }, function (error) {
+                            reject(error);
+                        });
                 }
             }
+        });
     });
-
 };
 
 /**
@@ -68,7 +70,7 @@ exports.ifPeerAffairRelation = function (roleId_1, roleId_2, affairId) {
  * @returns {*}
  */
 exports.setPeerFriendRelationCache = function (roleId_1, roleId_2) {
-    var value = getCacheContent(roleId_1, roleId_2);
+    var value = getCacheContentUtil(roleId_1, roleId_2);
     return redisClient.saddAsync(friendRelationKey, value);
 }
 
@@ -78,32 +80,38 @@ exports.setPeerFriendRelationCache = function (roleId_1, roleId_2) {
  * @param roleId_2
  */
 exports.ifPeerFriendRelation = function (roleId_1, roleId_2) {
-    var value = getCacheContent(roleId_1, roleId_2);
+    var value = getCacheContentUtil(roleId_1, roleId_2);
 
-    redisClient.sismemberAsync(value)
-        .then(function (res) {
-            if(res == 1){//如果在缓存中确认两人在同一个affair中
-                return new Promise(function(resolve, reject){
-                    resolve(true);
-                });
+    return new Promise(function (resolve, reject) {
+        redisClient.sismember(friendRelationKey, value, function (error, res) {
+            if(error){
+                reject(error);
             }else{
-                //TODO 调用java后台查询两人是否为朋友关系
-                //TODO 如果在的话则将两者的好友关系加入到cache中
-                if(true){
-                    exports.setPeerFriendRelationCache(roleId_1, roleId_2);
-                    return new Promise(function(resolve, reject){
-                        resolve(true);
-                    });
-                }else{
-                    return new Promise(function(resolve, reject){
-                        resolve(false);
-                    });
+                if(res == 1){
+                    resolve(true);
+                }else{  //如果缓存中找不到则到Mysql中查询
+                    mysqlService.ifFriendRelation(roleId_1, roleId_2)
+                        .then(function (res) {
+                            if(res){   //如果在数据库中查询在为朋友关系则添加到缓存中
+                                exports.setPeerFriendRelationCache(roleId_1, roleId_2);
+                                resolve(true);
+                            }else{
+                                resolve(false);
+                            }
+                        }, function (error) {
+                            reject(error);
+                        });
                 }
-
             }
         });
-}
+    });
+};
 
+/**
+ * 添加讨论组人员信息的缓存
+ * @param groupId
+ * @param roleIds
+ */
 exports.setGroupMemberRoleIds = function (groupId, roleIds) {
     var key = groupKey + '_' +groupId;
     _.each(roleIds,function (val) {
@@ -112,6 +120,11 @@ exports.setGroupMemberRoleIds = function (groupId, roleIds) {
 
 };
 
+/**
+ * 获得讨论组的成员信息
+ * @param groupId
+ * @returns {Promise}
+ */
 exports.getGroupMemberRoleIds = function (groupId) {
     var key = groupKey + '_' +groupId;
     return new Promise(function (resolve, reject) {
@@ -140,6 +153,15 @@ exports.getGroupMemberRoleIds = function (groupId) {
     });
 };
 
+/**
+ * 比较roleId的简单工具方法
+ * @param roleId_1
+ * @param roleId_2
+ * @returns {string}
+ */
+function getCacheContentUtil(roleId_1, roleId_2){
+    return roleId_1 >= roleId_2 ? (roleId_1 + '-' + roleId_2) : (roleId_2 + '-' + roleId_1);   //TODO 确认这样比较字符串是否会有问题
+};
 
 
 
