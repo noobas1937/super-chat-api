@@ -1,5 +1,6 @@
 var mysql = require('mysql'),
-    mysqlCfg = require('./mysqlCfg.json');
+    mysqlCfg = require('./mysqlCfg.json'),
+    _ = require('underscore');
 
 var db = mysql.createConnection(mysqlCfg);
 
@@ -20,7 +21,11 @@ exports.getGroupMembers = function(groupId){
                 if(err){
                         reject(err);
                 }else{
-                        resolve(info);
+                        var data = [];
+                        _.each(info, function (item) {
+                            data.push(item.role_id);
+                        });
+                        resolve(data);
                 }
             });
     });

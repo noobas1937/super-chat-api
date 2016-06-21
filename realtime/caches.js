@@ -138,7 +138,7 @@ exports.getGroupMemberRoleIds = function (groupId) {
                             if(result.length == 0){ //如果Mysql数据库中还是获取不到该Group的成员信息
                                 reject(new Error('Group not found'));
                             }else{
-                                exports.setGroupMemberRoleIds(groupId, result); //TODO 传过来的格式数据格式还需要匹配一下
+                                exports.setGroupMemberRoleIds(groupId, result);
                                 resolve(result);
                             }
                         }, function (err) {
@@ -150,6 +150,29 @@ exports.getGroupMemberRoleIds = function (groupId) {
                 }
             }
         });
+    });
+};
+
+
+/**
+ * 判断一个用户是否在某一个Group中
+ * @param peerId
+ * @param groupId
+ */
+exports.ifPeerInGroup = function (roleId, groupId) {
+    return new Promise(function (resolve, reject) {
+        exports.getGroupMemberRoleIds(groupId)
+            .then(function (data) {
+                _.each(data, function (item) {  //TODO 不确定执行完resolve后for循环是否会终止为了保险加上了return语句,后续需了解相关知识
+                    if(item == roleId){
+                        resolve(true);
+                        return;
+                    }
+                });
+                resolve(false);
+            }, function (error) {
+                reject(error);
+            });
     });
 };
 

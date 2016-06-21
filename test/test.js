@@ -1,5 +1,5 @@
 var redis = require('redis'),
-    consts = require('./consts'),
+    consts = require('./../realtime/consts'),
     Q = require('bluebird'),
     affairRealationKey = 'affair';
 
