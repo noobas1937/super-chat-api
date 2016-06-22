@@ -10,6 +10,56 @@ var peerChannels = exports.peerChannels = {};
 //所有连接中的socket
 var onlineChannels = exports.onlineChannels = {};
 
+
+/**
+ * 给单个人发送信息
+ */
+exports.sendMessageToPeer = function (message, toPeerId) {  //此处的peerId应该就是RoleId
+    var chs = peerChannels[toPeerId];
+    if(_.isArray(chs)){ //如果这人个在线
+        _.each(chs, function (chId) {
+            var ch = onlineChannels[chId];
+            if(ch & ch.connected){
+                try {
+                    ch.emit('message', message);
+                } catch (e) {
+                }
+            }
+        });
+    }
+};
+
+/**
+ * 向多人发送信息
+ */
+exports.sendMessageToMultiplePeers = function (message, toPeerIds) {
+    _.each(toPeerIds, function (peerId) {
+        exports.sendMessageToPeer(message, peerId);
+    });
+};
+
+
+
+/**
+ * 发送Group消息
+ */
+exports.sendMessageToGroup = function (message, roleId, groupId){
+    return new Promise(function (resolve, reject) {
+        caches.ifPeerInGroup(roleId, groupId)
+            .then(function (res) {
+                if(res){  //如果给Group发送信息的人在Group中 则给Group中所有在线的人员发送消息
+                    var groupPeers = caches.getGroupMemberRoleIds(groupId);
+                    exports.sendMessageToMultiplePeers(message, groupPeers);
+                    resolve('ok');
+                }else{
+                    reject(new Error('No Permission: 用户不在当前Group中'));
+                }
+            }, function (error) {
+                reject(error);
+            });
+    });
+};
+
 exports.handleNewChannel = function (socket) {
 
     onlineChannels[socket.id] = socket;
@@ -47,54 +97,32 @@ exports.handleNewChannel = function (socket) {
         var fromRole = message.fromRole;
         var toRole = message.toRole;
         var affairId = message.affairId;
+        var groupId = message.groupId;
         if(msgType.indexOf("chat") == 0){
-            if(msgType.indexOf("chat") == 0){
-                caches.ifPeerAffairRelation(fromRole, toRole, affairId).then(function (res) {
-                    if(res){//如果聊天的双发在同一个affair中
-                        //TODO 发送消息
+            if(msgType.indexOf("chat") == 0) {
+                if (affairId == consts.friend_key) {  //如果affairId = 'friend'那么是朋友间聊天
+                    caches.ifPeerFriendRelation(fromRole, toRole).then(function (res) {
+                        if(res){ exports.sendMessageToPeer(message, toRole);}
+                    }, function (error) {
 
-                    }else{
+                    });
+                } else {
+                    caches.ifPeerAffairRelation(fromRole, toRole, affairId)
+                        .then(function (res) {
+                        if (res) {//如果聊天的双发在同一个affair中
+                           exports.sendMessageToPeer(message, toRole);
+                        } else {
                         //TODO 需要报错么
-                    }
-                }, function (error) {
+                        }
+                        }, function (error) {
 
-                });
-            }else if(msgType.indexOf("group")){
-                //TODO 查询所有在组中的信息
+                    });
+                }
+            }else if(msgType.indexOf("group")){ //如果发送的是群聊信息
+                exports.sendMessageToGroup(message, groupId);
             }
         }
     });
-
-
-    /**
-     * 给单个人发送信息
-     */
-    function sendMessageToPeer(){
-        
-    };
-
-
-    /**
-     * 发送Group消息
-     */
-    function sendMessageToGroup(roleId, groupId){
-        return new Promise(function (resolve, reject) {
-            caches.ifPeerInGroup(roleId, groupId)
-                .then(function (res) {
-                    if(res){  //如果给Group发送信息的人在Group中 则给Group中所有在线的人员发送消息
-                        var group_peers = caches.getGroupMemberRoleIds(groupId);
-                        
-                        resolve('ok');
-                    }else{
-                        reject(new Error('No Permission: 用户不在当前Group中'));
-                    }
-                }, function (error) {
-                    reject(error);
-                });
-        });
-    };
-
-
 
     /**
      * 获得当前在连socket数量
@@ -162,7 +190,7 @@ exports.clearChannel = function (ch) {
                 delete peerChannels[ch.peerId];
             }
         }
-        //第二部删除该channel
+        //第二步删除该channel
         delete onlineChannels[ch.id];
     }
 }

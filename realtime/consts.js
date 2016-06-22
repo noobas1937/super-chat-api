@@ -9,7 +9,8 @@ var consts = {
     },
     super_apps: [ // allowed apps in addition to apps store in data source
         {app_key: 'demo', app_secret: 'demo'}
-    ]
+    ],
+    friend_key : 'friend'
 };
 
 module.exports = consts;
