@@ -86,9 +86,3 @@ exports.ifFriendRelation = function(roleId_1, roleId_2){
 };
 
 
-// //Test Case
-// db.query('SELECT id FROM affair_member WHERE affair_id = ? ',
-//     ['71d97697-b455-4ea3-112-45d35d7b96ea'],
-//     function(err, info){
-//         console.log(info);
-//     });

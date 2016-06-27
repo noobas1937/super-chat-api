@@ -92,11 +92,14 @@ exports.handleNewChannel = function (socket) {
      * 发送信息
      */
     socket.on('message', function (requestId, message) {
-        var msgType = message.type;
-        var fromRole = message.fromRole;
-        var toRole = message.toRole;
-        var affairId = message.affairId;
-        var groupId = message.groupId;
+        var msgJson = JSON.parse(message);
+        
+        var msgType = msgJson['type'];
+        var fromRole = msgJson['fromRole'];
+        var toRole = msgJson['toRole'];
+        var affairId = msgJson['affairId'];
+        var groupId = msgJson['groupId'];
+        
         if (msgType.indexOf("chat") == 0) {
             if (affairId == consts.friend_key) {  //如果affairId = 'friend'那么是朋友间聊天
                 sendMessageToFriend(fromRole, toRole, message);
@@ -141,6 +144,10 @@ exports.handleNewChannel = function (socket) {
             }, function (error) {
 
             });
+    };
+    
+    function getMessageFromJson(){
+        
     };
 
     /**
