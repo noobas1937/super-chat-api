@@ -110,7 +110,7 @@ exports.handleNewChannel = function (socket) {
     onlineChannels[socket.id] = socket;
 
     //登录事件
-    socket.on('sign_in', function (requestId, peerId) {
+    socket.on('sign_in', function (token, peerId) {  //预留token给以后做验证
         console.log("用户" + peerId + "已登录.");
         //设置socket的关联peerId
         socket.peerId = peerId;
@@ -238,13 +238,13 @@ exports.getOnlineChannelPeerIds = function () {
 
 
 /**
- * 比较roleId的简单工具方法
+ * 获得两人之前的聊天的key的Util方法
  * @param roleId_1
  * @param roleId_2
  * @returns {string}
  */
 exports.getKeyUtil = function (roleId_1, roleId_2){
-    return roleId_1 <= roleId_2 ? (roleId_1 + '@' + roleId_2) : (roleId_2 + '@' + roleId_1);   //TODO 确认这样比较字符串是否会有问题
+    return roleId_1 <= roleId_2 ? (roleId_1 + '@' + roleId_2) : (roleId_2 + '@' + roleId_1);
 };
 
 exports.clearChannel = function (ch) {
