@@ -183,7 +183,7 @@ exports.ifPeerInGroup = function (roleId, groupId) {
  * @returns {string}
  */
 function getCacheContentUtil(roleId_1, roleId_2){
-    return roleId_1 >= roleId_2 ? (roleId_1 + '-' + roleId_2) : (roleId_2 + '-' + roleId_1);   //TODO 确认这样比较字符串是否会有问题
+    return roleId_1 <= roleId_2 ? (roleId_1 + '-' + roleId_2) : (roleId_2 + '-' + roleId_1);   //TODO 确认这样比较字符串是否会有问题
 };
 
 

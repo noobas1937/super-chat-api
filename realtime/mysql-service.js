@@ -68,7 +68,7 @@ exports.ifInSameAffair = function(roleId_1, roleId_2, affairId){
  */
 exports.ifFriendRelation = function(roleId_1, roleId_2){
     return new Promise(function (resolve, reject) {
-        //因friend关系表中roleId1和roleId2是按照大小顺序存故使用OR
+        //因friend关系表中roleId1和roleId2是没有按照大小顺序存故使用OR
         db.query('SELECT id FROM friend WHERE (role_id_1 = ? AND role_id_2 = ? AND state = 0) OR (role_id_2 = ? AND role_id_1 = ? AND state = 0)',
             [roleId_1, roleId_2, roleId_1, roleId_2],
             function(err, info){
