@@ -125,7 +125,7 @@ exports.setGroupMemberRoleIds = function (groupId, roleIds) {
  * @param groupId
  * @returns {Promise}
  */
-exports.getGroupMemberRoleIds = function (groupId) {
+exports.getGroupMemberList = function (groupId) {
     var key = groupKey + '_' +groupId;
     return new Promise(function (resolve, reject) {
         redisClient.smembers(key, function(err, data){
@@ -161,7 +161,7 @@ exports.getGroupMemberRoleIds = function (groupId) {
  */
 exports.ifPeerInGroup = function (roleId, groupId) {
     return new Promise(function (resolve, reject) {
-        exports.getGroupMemberRoleIds(groupId)
+        exports.getGroupMemberList(groupId)
             .then(function (data) {
                 _.each(data, function (item) {  //TODO 不确定执行完resolve后for循环是否会终止为了保险加上了return语句,后续需了解相关知识
                     if(item == roleId){

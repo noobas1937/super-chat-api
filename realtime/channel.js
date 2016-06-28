@@ -4,7 +4,7 @@ var mongoose = require('mongoose')
     , caches = require('./caches')
     , redis = require('redis')
     , _ = require('underscore')
-    , Message =require('./models').Message;
+    , Message = require('./models').Message;
 
 //在线用户的所有channelId(一个用户可能多处登录
 var peerChannels = exports.peerChannels = {};
@@ -15,7 +15,7 @@ var onlineChannels = exports.onlineChannels = {};
 /**
  * 给单个人发送信息
  */
-exports.sendMessageToPeer = function (message, toPeerId) {  //此处的peerId应该就是RoleId
+exports.sendMessageToPeer = function (message, toPeerId) {
     var chs = peerChannels[toPeerId];
     if (_.isArray(chs)) { //如果这人个在线
         _.each(chs, function (chId) {
@@ -38,19 +38,26 @@ exports.sendMessageToPeer = function (message, toPeerId) {  //此处的peerId应
  * @param message
  * @param msg
  */
-exports.sendMessageToAffairPeer = function (fromRole, toRole, affairId, message, msg) {
-    caches.ifPeerAffairRelation(fromRole, toRole, affairId)
-        .then(function (res) {
-            if (res) {//如果聊天的双发在同一个affair中
-                exports.sendMessageToPeer(message, toRole);
-                msg[key] = exports.getKeyUtil(fromRole, toRole);
-                msg.save();
-            } else {
-                //TODO 需要报错么
-            }
-        }, function (error) {
+exports.sendMessageToAffairPeer = function (fromRole, toUserId, toRole, affairId, message, msg) {
+    return new Promise(function (resolve, reject) {
+        caches.ifPeerAffairRelation(fromRole, toRole, affairId)
+            .then(function (res) {
+                if (res) {//如果聊天的双发在同一个affair中
+                    exports.sendMessageToPeer(message, toRole);
+                    msg[key] = exports.getKeyUtil(fromRole, toRole);
+                    msg.save(function (error) {
+                        reject(error);
+                    }, function (res) {
+                        resolve(res);
+                    });
+                } else {
+                    //TODO 需要报错么
+                    reject(new Error('No permission: 两个User Role不在同一个事务中.'));
+                }
+            }, function (error) {
 
-        });
+            });
+    });
 };
 
 /**
@@ -60,15 +67,21 @@ exports.sendMessageToAffairPeer = function (fromRole, toRole, affairId, message,
  * @param message
  * @param msg
  */
-exports.sendMessageToFriend = function (fromRole, toRole, message, msg) {
-    caches.ifPeerFriendRelation(fromRole, toRole).then(function (res) {
-        if (res) {
-            exports.sendMessageToPeer(message, toRole);
-            msg[key] = exports.getKeyUtil(fromRole, toRole);
-            msg.save();
-        }
-    }, function (error) {
-
+exports.sendMessageToFriend = function (fromRole, toUserId, toRole, message, msg) {
+    return new Promise(function (resolve, reject) {
+        caches.ifPeerFriendRelation(fromRole, toRole).then(function (res) {
+            if (res) {
+                exports.sendMessageToPeer(message, toRole);
+                msg[key] = exports.getKeyUtil(fromRole, toRole);
+                msg.save(function (error) {
+                    reject(error);
+                }, function (res) {
+                    resolve(res);
+                });
+            }
+        }, function (error) {
+            reject(error);
+        });
     });
 };
 
@@ -86,16 +99,19 @@ exports.sendMessageToMultiplePeers = function (message, toPeerIds) {
 /**
  * 发送Group消息
  */
-exports.sendMessageToGroup = function (message, roleId, groupId, msg) {
+exports.sendMessageToGroup = function (requestId, message, roleId, groupId, msg) {
     return new Promise(function (resolve, reject) {
         caches.ifPeerInGroup(roleId, groupId)
             .then(function (res) {
                 if (res) {  //如果给Group发送信息的人在Group中 则给Group中所有在线的人员发送消息
-                    var groupPeers = caches.getGroupMemberRoleIds(groupId);
+                    var groupPeers = caches.getGroupMemberList(groupId);
                     exports.sendMessageToMultiplePeers(message, groupPeers);
                     msg['key'] = groupId; //如果是群发消息则将groupId设为key
-                    msg.save();
-                    resolve('ok');
+                    msg.save(function (error) {
+                        reject(error);
+                    }, function (res) {
+                        resolve(res);
+                    });
                 } else {
                     reject(new Error('No Permission: 用户不在当前Group中'));
                 }
@@ -109,11 +125,17 @@ exports.handleNewChannel = function (socket) {
 
     onlineChannels[socket.id] = socket;
 
-    //登录事件
-    socket.on('sign_in', function (token, peerId) {  //预留token给以后做验证
+    /**
+     * @param requestId 随机生成
+     * @param token 做验证
+     * @param peerId user_id
+     * @param userAgent socket的客户端信息
+     */
+    socket.on('sign_in', function (requestId, token, peerId, userAgent) {  //预留token给以后做验证
         console.log("用户" + peerId + "已登录.");
-        //设置socket的关联peerId
+        //设置socket的关联peerId和相关的userAgent
         socket.peerId = peerId;
+        socket.userAgent = userAgent;
         //将用户新的在线channel记录到peerChannels中
         if (peerId) {
             var chs = peerChannels[peerId];
@@ -129,25 +151,30 @@ exports.handleNewChannel = function (socket) {
 
     });
 
-    //返回当前channel的peerId
+    /**
+     *
+     */
     socket.on('peer_id', function (requestId) {
         socket.emit('response', requestId, socket.peerId);
     });
 
     /**
      * 发送信息
+     * @param requestId 随机生成
+     * @Param message 消息体
      */
-    socket.on('message', function (requestId, message) {
+    socket.on('send_message', function (requestId, message) {
         var msgJson = JSON.parse(message);
-        
+
         var msgType = msgJson['type'];
         var fromRole = msgJson['fromRole'];
+        var toUserId = msgJson['toUserId'];
         var toRole = msgJson['toRole'];
         var affairId = msgJson['affairId'];
         var groupId = msgJson['groupId'];
-        
+
         var msg = new Message({
-            type : msgType,
+            type: msgType,
             timestamp: new Date(),
             fromId: msgJson['fromId'],
             fromRole: fromRole,
@@ -156,29 +183,75 @@ exports.handleNewChannel = function (socket) {
             toRole: toRole,
             content: message
         });
-        
-        if (msgType.indexOf("chat") == 0) {
-            if (affairId == consts.friend_key) {  //如果affairId = 'friend'那么是朋友间聊天
-                exports.sendMessageToFriend(fromRole, toRole, message);
-            } else {
-                exports.sendMessageToAffairPeer(fromRole, toRole, affairId, message);
+
+
+        //给要转发的消息加上时间戳
+        var serverTimestamp = new Date();
+        msgJson.timestamp = serverTimestamp;
+        message = JSON.stringify(msgJson);
+
+        if (msgType.indexOf("chat") == 0) {//单人聊天
+            if (affairId == consts.friend_key) {  //朋友聊天
+                exports.sendMessageToFriend(fromRole, toUserId, toRole, message, msg)
+                    .then(function (res) {
+                        var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
+                        socket.emit('message_response', m_res);
+                    }, function (error) {
+
+                    });
+            } else {//事务内聊天
+                exports.sendMessageToAffairPeer(fromRole, toUserId, toRole, affairId, message, msg)
+                    .then(function (res) {
+                        var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
+                        socket.emit('message_response', m_res);
+                    }, function (error) {
+
+                    });
             }
-        } else if (msgType.indexOf('group')) { //如果发送的是群聊信息
-            exports.sendMessageToGroup(message, groupId);
-        } else if (msgType.indexOf('multi')) {
-            var toRoleIds = message.toRoleIds;
-            if (affairId == consts.friend_key) {  //如果affairId = 'friend' 那么是朋友聊天
-                _.each(toRoleIds, function (roleId) {
-                    exports.sendMessageToFriend(fromRole, roleId, message);
+        } else if (msgType.indexOf('group')) {//群组聊天
+            exports.sendMessageToGroup(message, groupId)
+                .then(function (res) {
+                    var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
+                    socket.emit('message_response', m_res);
+                }, function (error) {
+
                 });
-            } else {
-                _.each(toRoleIds, function (roleId) {
-                    exports.sendMessageToAffairPeer(fromRole, roleId, affairId, message);
+        } else if (msgType.indexOf('multi')) {//发送多人信息聊天
+            var toUserIds = msgJson['toUserIds'];
+            var toRoleIds = msgJson['toRoleIds'];
+            if (affairId == consts.friend_key) {//朋友聊天
+                var index = 0;
+                _.each(toUserIds, function (m_toUserId) {
+                    var m_toRole = toRoleIds[index++];
+                    exports.sendMessageToFriend(fromRole, m_toUserId, m_toRole, message, msg)
+                        .then(function (res) {
+                            var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
+                            socket.emit('message_response', m_res);
+                        }, function (error) {
+
+                        });
+                });
+            } else {//事务内聊天
+                var index = 0;
+                _.each(toUserIds, function (m_toUserId) {
+                    var m_toRole = toRoleIds[index++];
+                    exports.sendMessageToAffairPeer(fromRole, m_toUserId, m_toRole, affairId, message, msg)
+                        .then(function (res) {
+                            var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
+                            socket.emit('message_response', m_res);
+                        }, function (error) {
+
+                        });
                 });
             }
         }
     });
-    
+
+
+    socket.on('find_message', function (requestId) {
+
+    });
+
 
     /**
      * 获得当前在连socket数量
@@ -243,7 +316,7 @@ exports.getOnlineChannelPeerIds = function () {
  * @param roleId_2
  * @returns {string}
  */
-exports.getKeyUtil = function (roleId_1, roleId_2){
+exports.getKeyUtil = function (roleId_1, roleId_2) {
     return roleId_1 <= roleId_2 ? (roleId_1 + '@' + roleId_2) : (roleId_2 + '@' + roleId_1);
 };
 

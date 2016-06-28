@@ -15,7 +15,7 @@ db.on('error', function (error) {
  */
 exports.getGroupMembers = function(groupId){
     return new Promise(function (resolve, reject) {
-        db.query('SELECT role_id FROM discuss_group_member WHERE group_id = ?',
+        db.query('SELECT user_id FROM discuss_group_member WHERE group_id = ?',  //此处选择user_id而非role_id作为key否则一个user可能有多个role导致重复收到消息
             [groupId],
             function (err, info) {
                 if(err){
