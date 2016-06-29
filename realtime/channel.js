@@ -152,13 +152,6 @@ exports.handleNewChannel = function (socket) {
     });
 
     /**
-     *
-     */
-    socket.on('peer_id', function (requestId) {
-        socket.emit('response', requestId, socket.peerId);
-    });
-
-    /**
      * 发送信息
      * @param requestId 随机生成
      * @Param message 消息体
@@ -247,9 +240,59 @@ exports.handleNewChannel = function (socket) {
         }
     });
 
+    /**
+     * @param requestId
+     * @param peerId
+     */
+    socket.on('peers_status', function (requestId, peerId) {
+        var clients = [];
+        var chs = peerChannels[peerId];
+        if(_.isArray(chs) && chs.length > 0){
+            _.each(chs, function (chId) {
+                if(onlineChannels[chId]){
+                    clients.push({
+                        'userAgent': onlineChannels[chId].userAgent //TODO 还需要socket的ip信息么
+                    });
+                }
+            });
+        }
 
-    socket.on('find_message', function (requestId) {
+        var msg = {
+            'requestId': requestId,
+            'clients': clients
+        };
 
+        socket.emit('peers_status_response', msg);
+
+
+    });
+
+    /**
+     * @param requestId 随机生成
+     * @param beginTime 默认为空(起始
+     * @param endTime 默认为当前时间(结束
+     * @param limit 条数
+     * @param filters 筛选条件
+     */
+    socket.on('find_message', function (requestId, beginTime, endTime, limit, filters) {
+        
+    });
+
+    /**
+     * @param peerId userId
+     * @param filters 是单人聊天还是多人聊天????  这里我觉得应该放在取channel
+     */
+    socket.on('mark_read_time', function (peerId, filters) {
+
+    });
+
+    /**
+     * @param requestId 随机生成
+     * @param peerId userId
+     * @param filters 筛选条件
+     */
+    socket.on('unread_message_count', function (requestId, peerId, filters) {
+        
     });
 
 

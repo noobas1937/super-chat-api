@@ -3,3 +3,7 @@ var models = require('./models'),
     _ = require('underscore');
 
 //TODO 查询获取历史信息等等的一些接口
+
+exports.findMessage = function (beginTime, endTime, filters) {
+    
+}
