@@ -4,7 +4,8 @@ var mongoose = require('mongoose')
     , caches = require('./caches')
     , redis = require('redis')
     , _ = require('underscore')
-    , Message = require('./models').Message;
+    , Message = require('./models').Message
+    , messageService = require('./message');
 
 //在线用户的所有channelId(一个用户可能多处登录
 var peerChannels = exports.peerChannels = {};
@@ -190,7 +191,7 @@ exports.handleNewChannel = function (socket) {
                         var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                         socket.emit('message_response', m_res);
                     }, function (error) {
-
+                        socket.emit('message_response', error);
                     });
             } else {//事务内聊天
                 exports.sendMessageToAffairPeer(fromRole, toUserId, toRole, affairId, message, msg)
@@ -198,7 +199,7 @@ exports.handleNewChannel = function (socket) {
                         var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                         socket.emit('message_response', m_res);
                     }, function (error) {
-
+                        socket.emit('message_response', error);
                     });
             }
         } else if (msgType.indexOf('group')) {//群组聊天
@@ -207,7 +208,7 @@ exports.handleNewChannel = function (socket) {
                     var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                     socket.emit('message_response', m_res);
                 }, function (error) {
-
+                    socket.emit('message_response', error);
                 });
         } else if (msgType.indexOf('multi')) {//发送多人信息聊天
             var toUserIds = msgJson['toUserIds'];
@@ -221,7 +222,7 @@ exports.handleNewChannel = function (socket) {
                             var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                             socket.emit('message_response', m_res);
                         }, function (error) {
-
+                            socket.emit('message_response', error);
                         });
                 });
             } else {//事务内聊天
@@ -233,7 +234,7 @@ exports.handleNewChannel = function (socket) {
                             var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                             socket.emit('message_response', m_res);
                         }, function (error) {
-
+                            socket.emit('message_response', error);
                         });
                 });
             }
@@ -275,7 +276,12 @@ exports.handleNewChannel = function (socket) {
      * @param filters 筛选条件
      */
     socket.on('find_message', function (requestId, beginTime, endTime, limit, filters) {
-        
+        messageService.findMessage(beginTime, endTime, limit, filters)
+            .then(function (res) {
+                socket.emit('message_history', {'requestId': requestId, 'list': res});
+        }, function (error) {
+            socket.emit('message_history', error);
+        });
     });
 
     /**
