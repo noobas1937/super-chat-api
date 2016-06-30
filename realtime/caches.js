@@ -38,6 +38,7 @@ exports.ifPeerAffairRelation = function (roleId_1, roleId_2, affairId) {
     var value = getCacheContentUtil(roleId_1, roleId_2);
     value += ('@' + affairId);
 
+   
     return new Promise(function (resolve, reject) {
         redisClient.sismember(affairRelationKey, value, function (error, res) {
             if(error){

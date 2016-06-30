@@ -73,7 +73,7 @@ exports.sendMessageToFriend = function (fromRole, toUserId, toRole, message, msg
         caches.ifPeerFriendRelation(fromRole, toRole).then(function (res) {
             if (res) {
                 exports.sendMessageToPeer(message, toRole);
-                msg[key] = exports.getKeyUtil(fromRole, toRole);
+                msg[key] = exports.getKeyUtil(fromRole, toRole);  //设置msg的key
                 msg.save(function (error) {
                     reject(error);
                 }, function (res) {
@@ -158,31 +158,29 @@ exports.handleNewChannel = function (socket) {
      * @Param message 消息体
      */
     socket.on('send_message', function (requestId, message) {
-        var msgJson = JSON.parse(message);
 
-        var msgType = msgJson['type'];
-        var fromRole = msgJson['fromRole'];
-        var toUserId = msgJson['toUserId'];
-        var toRole = msgJson['toRole'];
-        var affairId = msgJson['affairId'];
-        var groupId = msgJson['groupId'];
+        var msgType = message.type;
+        var fromRole = message.fromRole;
+        var toUserId = message.toUserId;
+        var toRole = message.toRole;
+        var affairId = message.affairId;
+        var groupId = message.groupId;
 
         var msg = new Message({
-            type: msgType,
-            timestamp: new Date(),
-            fromId: msgJson['fromId'],
-            fromRole: fromRole,
-            affairId: affairId,
-            toUserId: msgJson['toUserId'],
-            toRole: toRole,
-            content: message
+            'type': msgType,
+            'timestamp': new Date(),
+            'fromId': message.fromId,
+            'fromRole': fromRole,
+            'affairId': affairId,
+            'toUserId': toUserId,
+            'toRole': toRole,
+            'content': message
         });
 
 
         //给要转发的消息加上时间戳
         var serverTimestamp = new Date();
-        msgJson.timestamp = serverTimestamp;
-        message = JSON.stringify(msgJson);
+    
 
         if (msgType.indexOf("chat") == 0) {//单人聊天
             if (affairId == consts.friend_key) {  //朋友聊天

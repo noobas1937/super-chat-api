@@ -56,5 +56,6 @@ app.use(function(err, req, res, next) {
   });
 });
 
+require('./util/betterjs');
 
 module.exports = app;
