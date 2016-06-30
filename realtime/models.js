@@ -24,9 +24,20 @@ var MessageSchema = new Schema({
     content: String   //存放message
 });
 
+
+var LastReadTimeSchema = new Schema({
+    userId : String,
+    toUserId : String,
+    affairId : String,
+    groupId : String
+});
+
 var Message = mongoose.model('Message', MessageSchema, 'Messages');
+
+var LastReadTime = mongoose.model(LastReadTimeSchema);
 
 
 
 exports.Message = Message;
+exports.LastReadTime = LastReadTime;
 

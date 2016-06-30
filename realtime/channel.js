@@ -5,6 +5,7 @@ var mongoose = require('mongoose')
     , redis = require('redis')
     , _ = require('underscore')
     , Message = require('./models').Message
+    , LastReadTime = require('./models').LastReadTime
     , messageService = require('./message');
 
 //在线用户的所有channelId(一个用户可能多处登录
@@ -287,7 +288,16 @@ exports.handleNewChannel = function (socket) {
      * @param filters 是单人聊天还是多人聊天????  这里我觉得应该放在取channel
      */
     socket.on('mark_read_time', function (peerId, filters) {
-
+        var data = {'userId': peerId};
+        if(_.isObject(filters)){
+            var keys = _.keys(filters);
+            _.each(keys, function (key) {     //TODO 是否有需要验证null undefine 等
+                data[key] = filters[key];
+            });
+        }
+        var lastReadTime = new LastReadTime(data);
+        
+        lastReadTime.save();
     });
 
     /**
