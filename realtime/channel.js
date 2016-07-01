@@ -18,18 +18,28 @@ var onlineChannels = exports.onlineChannels = {};
  * 给单个人发送信息
  */
 exports.sendMessageToPeer = function (message, toPeerId) {
-    var chs = peerChannels[toPeerId];
-    if (_.isArray(chs)) { //如果这人个在线
-        _.each(chs, function (chId) {
-            var ch = onlineChannels[chId];
-            if (ch & ch.connected) {
-                try {
-                    ch.emit('message', message);
-                } catch (e) {
+    console.log('------------进入到sendMessage的方法中--------------');
+    return new Promise(function (resolve, reject) {
+        var chs = peerChannels[toPeerId];
+        console.log('------------成功获取到需要被发送的channels--------------');
+        if (_.isArray(chs)) { //如果这人个在线
+            console.log('------------开始遍历前--------------');
+            _.each(chs, function (chId) {
+                var ch = onlineChannels[chId];
+                console.log('------------获得channel--------------');
+                if (ch) {
+                    try {
+                        console.log('------------向channel中发送信息--------------');
+                        ch.emit('message', message);
+                        resolve(true);
+                    } catch (e) {
+                        console.log('------------发生异常--------------');
+                        reject(e);
+                    }
                 }
-            }
-        });
-    }
+            });
+        } 
+    });
 };
 
 /**
@@ -45,19 +55,24 @@ exports.sendMessageToAffairPeer = function (fromRole, toUserId, toRole, affairId
         caches.ifPeerAffairRelation(fromRole, toRole, affairId)
             .then(function (res) {
                 if (res) {//如果聊天的双发在同一个affair中
-                    exports.sendMessageToPeer(message, toRole);
-                    msg[key] = exports.getKeyUtil(fromRole, toRole);
-                    msg.save(function (error) {
-                        reject(error);
-                    }, function (res) {
-                        resolve(res);
+                    console.log('------------用户在同一个affair中并发送信息--------------');
+                    exports.sendMessageToPeer(message, toUserId);
+                    console.log('------------发送完信息后--------------');
+                    var key = exports.getKeyUtil(fromRole, toRole);
+                    console.log('------------准备save msg--------------');
+                    msg.save(function (error, res) {
+                        if(error){
+                            reject(error);
+                        }else{
+                            resolve(res);
+                        }
                     });
                 } else {
                     //TODO 需要报错么
                     reject(new Error('No permission: 两个User Role不在同一个事务中.'));
                 }
             }, function (error) {
-
+                reject(error);
             });
     });
 };
@@ -73,7 +88,7 @@ exports.sendMessageToFriend = function (fromRole, toUserId, toRole, message, msg
     return new Promise(function (resolve, reject) {
         caches.ifPeerFriendRelation(fromRole, toRole).then(function (res) {
             if (res) {
-                exports.sendMessageToPeer(message, toRole);
+                exports.sendMessageToPeer(message, toUserId);
                 msg[key] = exports.getKeyUtil(fromRole, toRole);  //设置msg的key
                 msg.save(function (error) {
                     reject(error);
@@ -169,13 +184,13 @@ exports.handleNewChannel = function (socket) {
 
         var msg = new Message({
             'type': msgType,
-            'timestamp': new Date(),
+            // 'timestamp': new Date(),
             'fromId': message.fromId,
             'fromRole': fromRole,
             'affairId': affairId,
             'toUserId': toUserId,
             'toRole': toRole,
-            'content': message
+            // 'content': message
         });
 
 
@@ -193,11 +208,14 @@ exports.handleNewChannel = function (socket) {
                         socket.emit('message_response', error);
                     });
             } else {//事务内聊天
+                console.log('------------进行affair聊天--------------');
                 exports.sendMessageToAffairPeer(fromRole, toUserId, toRole, affairId, message, msg)
                     .then(function (res) {
+                        console.log('------------信息save成功--------------');
                         var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                         socket.emit('message_response', m_res);
                     }, function (error) {
+                        console.log('------------信息save失败--------------');
                         socket.emit('message_response', error);
                     });
             }

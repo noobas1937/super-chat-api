@@ -34,7 +34,7 @@ var LastReadTimeSchema = new Schema({
 
 var Message = mongoose.model('Message', MessageSchema, 'Messages');
 
-var LastReadTime = mongoose.model(LastReadTimeSchema);
+var LastReadTime = mongoose.model('LastReadTime', LastReadTimeSchema, 'LastReadTimes');
 
 
 
