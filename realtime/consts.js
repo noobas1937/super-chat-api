@@ -1,5 +1,5 @@
 var consts = {
-    mongo_uri: 'mongodb://test:test@localhost:27017/test',
+    mongo_uri: 'mongodb://simu:superid@localhost:27017/chat',
     redis_uri: 'redis://localhost:6379/0',
     friend_key : 'friend'
 };
