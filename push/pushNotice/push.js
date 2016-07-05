@@ -23,3 +23,17 @@ exports.pushNoticeToAndroid = function (summary) {
     });
 };
 
+exports.pushNoticeToiOS = function (summary) {
+    push.pushNoticeToiOS({
+        AppKey: '23396884',
+        Target: 'all', // 推送目标: device：推送给指定设备； account：推送给指定帐号；all：推送给全部
+        TargetValue: 'all',
+        Title: 'title',
+        Summary: summary,
+        AndroidExtParameters: '{\"id\":1002,\"content\":\"Hello OpenAPI!\"}'
+    }, function (err, res) {
+        console.log(err, res);
+    });
+
+
+};
