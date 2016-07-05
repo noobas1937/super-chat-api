@@ -8,8 +8,8 @@ var push = new ALY.PUSH({
 );
 push.pushNoticeToAndroid({
     AppKey: '23396884',
-    Target: 'all', // 推送目标: device：推送给指定设备； account：推送给指定帐号；all：推送给全部
-    TargetValue: 'all',
+    Target: 'device', // 推送目标: device：推送给指定设备； account：推送给指定帐号；all：推送给全部
+    TargetValue: 'e1d2c8c107d24418b88f1708ea0e918b',
     Title: 'title',
     Summary: 'fuck all of you in the black room',
     AndroidExtParameters: '{\"id\":1002,\"content\":\"Hello OpenAPI!\"}'
