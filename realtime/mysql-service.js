@@ -23,7 +23,7 @@ exports.getGroupMembers = function(groupId){
                 }else{
                         var data = [];
                         _.each(info, function (item) {
-                            data.push(item.role_id);
+                            data.push(item.user_id);
                         });
                         resolve(data);
                 }

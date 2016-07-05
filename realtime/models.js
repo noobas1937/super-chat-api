@@ -1,6 +1,6 @@
 var mongoose = require('mongoose')
     , consts = require('./consts')
-    , node_utils = require('../util/node_utils')
+    // , node_utils = require('../util/node_utils')
     , caches = require('./caches')
     , redis = require('redis');
 
@@ -24,9 +24,20 @@ var MessageSchema = new Schema({
     content: String   //存放message
 });
 
+
+var LastReadTimeSchema = new Schema({
+    userId : String,
+    toUserId : String,
+    affairId : String,
+    groupId : String
+});
+
 var Message = mongoose.model('Message', MessageSchema, 'Messages');
+
+var LastReadTime = mongoose.model('LastReadTime', LastReadTimeSchema, 'LastReadTimes');
 
 
 
 exports.Message = Message;
+exports.LastReadTime = LastReadTime;
 

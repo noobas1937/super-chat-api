@@ -4,7 +4,9 @@ var mongoose = require('mongoose')
     , caches = require('./caches')
     , redis = require('redis')
     , _ = require('underscore')
-    , Message = require('./models').Message;
+    , Message = require('./models').Message
+    , LastReadTime = require('./models').LastReadTime
+    , messageService = require('./message');
 
 //在线用户的所有channelId(一个用户可能多处登录
 var peerChannels = exports.peerChannels = {};
@@ -16,18 +18,22 @@ var onlineChannels = exports.onlineChannels = {};
  * 给单个人发送信息
  */
 exports.sendMessageToPeer = function (message, toPeerId) {
-    var chs = peerChannels[toPeerId];
-    if (_.isArray(chs)) { //如果这人个在线
-        _.each(chs, function (chId) {
-            var ch = onlineChannels[chId];
-            if (ch & ch.connected) {
-                try {
-                    ch.emit('message', message);
-                } catch (e) {
+    return new Promise(function (resolve, reject) {
+        var chs = peerChannels[toPeerId];
+        if (_.isArray(chs)) { //如果这人个在线
+            _.each(chs, function (chId) {
+                var ch = onlineChannels[chId];
+                if (ch) {
+                    try {
+                        ch.emit('message', message);
+                        resolve(true);
+                    } catch (e) {
+                        reject(e);
+                    }
                 }
-            }
-        });
-    }
+            });
+        } 
+    });
 };
 
 /**
@@ -43,19 +49,23 @@ exports.sendMessageToAffairPeer = function (fromRole, toUserId, toRole, affairId
         caches.ifPeerAffairRelation(fromRole, toRole, affairId)
             .then(function (res) {
                 if (res) {//如果聊天的双发在同一个affair中
-                    exports.sendMessageToPeer(message, toRole);
-                    msg[key] = exports.getKeyUtil(fromRole, toRole);
-                    msg.save(function (error) {
-                        reject(error);
-                    }, function (res) {
-                        resolve(res);
+                    console.log('------------用户在同一个affair中并发送信息--------------');
+                    exports.sendMessageToPeer(message, toUserId);
+                    msg['key'] = exports.getKeyUtil(fromRole, toRole);
+                    //TODO msg中要加入key
+                    console.log('------------准备save msg--------------');
+                    msg.save(function (error, res) {
+                        if(error){
+                            reject(error);
+                        }else{
+                            resolve(res);
+                        }
                     });
                 } else {
-                    //TODO 需要报错么
                     reject(new Error('No permission: 两个User Role不在同一个事务中.'));
                 }
             }, function (error) {
-
+                reject(error);
             });
     });
 };
@@ -71,8 +81,8 @@ exports.sendMessageToFriend = function (fromRole, toUserId, toRole, message, msg
     return new Promise(function (resolve, reject) {
         caches.ifPeerFriendRelation(fromRole, toRole).then(function (res) {
             if (res) {
-                exports.sendMessageToPeer(message, toRole);
-                msg[key] = exports.getKeyUtil(fromRole, toRole);
+                exports.sendMessageToPeer(message, toUserId);
+                msg['key'] = exports.getKeyUtil(fromRole, toRole);  //设置msg的key
                 msg.save(function (error) {
                     reject(error);
                 }, function (res) {
@@ -152,73 +162,69 @@ exports.handleNewChannel = function (socket) {
     });
 
     /**
-     *
-     */
-    socket.on('peer_id', function (requestId) {
-        socket.emit('response', requestId, socket.peerId);
-    });
-
-    /**
      * 发送信息
      * @param requestId 随机生成
      * @Param message 消息体
      */
     socket.on('send_message', function (requestId, message) {
-        var msgJson = JSON.parse(message);
 
-        var msgType = msgJson['type'];
-        var fromRole = msgJson['fromRole'];
-        var toUserId = msgJson['toUserId'];
-        var toRole = msgJson['toRole'];
-        var affairId = msgJson['affairId'];
-        var groupId = msgJson['groupId'];
+        var msgType = message.type;
+        var fromRole = message.fromRole;
+        var toUserId = message.toUserId;
+        var toRole = message.toRole;
+        var affairId = message.affairId;
+        var groupId = message.groupId;
+        var _message = JSON.stringify(message);
 
         var msg = new Message({
-            type: msgType,
-            timestamp: new Date(),
-            fromId: msgJson['fromId'],
-            fromRole: fromRole,
-            affairId: affairId,
-            toUserId: msgJson['toUserId'],
-            toRole: toRole,
-            content: message
+            'type': msgType,
+            'key': '',
+            'timestamp': Date.now(),
+            'fromId': message.fromId,
+            'fromRole': fromRole,
+            'affairId': affairId,
+            'toUserId': toUserId,
+            'toRole': toRole,
+            'content': _message
         });
 
 
         //给要转发的消息加上时间戳
         var serverTimestamp = new Date();
-        msgJson.timestamp = serverTimestamp;
-        message = JSON.stringify(msgJson);
+    
 
-        if (msgType.indexOf("chat") == 0) {//单人聊天
+        if (msgType == 1) {//单人聊天
             if (affairId == consts.friend_key) {  //朋友聊天
                 exports.sendMessageToFriend(fromRole, toUserId, toRole, message, msg)
                     .then(function (res) {
                         var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                         socket.emit('message_response', m_res);
                     }, function (error) {
-
+                        socket.emit('message_response', error);
                     });
             } else {//事务内聊天
+                console.log('------------进行affair聊天--------------');
                 exports.sendMessageToAffairPeer(fromRole, toUserId, toRole, affairId, message, msg)
                     .then(function (res) {
+                        console.log('------------信息save成功--------------');
                         var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                         socket.emit('message_response', m_res);
                     }, function (error) {
-
+                        console.log('------------信息save失败--------------');
+                        socket.emit('message_response', error);
                     });
             }
-        } else if (msgType.indexOf('group')) {//群组聊天
+        } else if (msgType == 2) {//群组聊天
             exports.sendMessageToGroup(message, groupId)
                 .then(function (res) {
                     var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                     socket.emit('message_response', m_res);
                 }, function (error) {
-
+                    socket.emit('message_response', error);
                 });
-        } else if (msgType.indexOf('multi')) {//发送多人信息聊天
-            var toUserIds = msgJson['toUserIds'];
-            var toRoleIds = msgJson['toRoleIds'];
+        } else if (msgType == 4) {//发送多人信息聊天
+            var toUserIds = message.toUserIds;
+            var toRoleIds = message.toRoleIds;
             if (affairId == consts.friend_key) {//朋友聊天
                 var index = 0;
                 _.each(toUserIds, function (m_toUserId) {
@@ -228,7 +234,7 @@ exports.handleNewChannel = function (socket) {
                             var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                             socket.emit('message_response', m_res);
                         }, function (error) {
-
+                            socket.emit('message_response', error);
                         });
                 });
             } else {//事务内聊天
@@ -240,16 +246,80 @@ exports.handleNewChannel = function (socket) {
                             var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                             socket.emit('message_response', m_res);
                         }, function (error) {
-
+                            socket.emit('message_response', error);
                         });
                 });
             }
         }
     });
 
+    /**
+     * @param requestId
+     * @param peerId
+     */
+    socket.on('peers_status', function (requestId, peerId) {
+        var clients = [];
+        var chs = peerChannels[peerId];
+        if(_.isArray(chs) && chs.length > 0){
+            _.each(chs, function (chId) {
+                if(onlineChannels[chId]){
+                    clients.push({
+                        'userAgent': onlineChannels[chId].userAgent //TODO 还需要socket的ip信息么
+                    });
+                }
+            });
+        }
 
-    socket.on('find_message', function (requestId) {
+        var msg = {
+            'requestId': requestId,
+            'clients': clients
+        };
 
+        socket.emit('peers_status_response', msg);
+
+
+    });
+
+    /**
+     * @param requestId 随机生成
+     * @param beginTime 默认为空(起始
+     * @param endTime 默认为当前时间(结束
+     * @param limit 条数
+     * @param filters 筛选条件
+     */
+    socket.on('find_message', function (requestId, beginTime, endTime, limit, filters) {
+        messageService.findMessage(beginTime, endTime, limit, filters)
+            .then(function (res) {
+                socket.emit('message_history', {'requestId': requestId, 'list': res});
+        }, function (error) {
+            socket.emit('message_history', error);
+        });
+    });
+
+    /**
+     * @param peerId userId
+     * @param filters 是单人聊天还是多人聊天????  这里我觉得应该放在取channel
+     */
+    socket.on('mark_read_time', function (peerId, filters) {
+        var data = {'userId': peerId};
+        if(_.isObject(filters)){
+            var keys = _.keys(filters);
+            _.each(keys, function (key) {     //TODO 是否有需要验证null undefine 等
+                data[key] = filters[key];
+            });
+        }
+        var lastReadTime = new LastReadTime(data);
+        
+        lastReadTime.save();
+    });
+
+    /**
+     * @param requestId 随机生成
+     * @param peerId userId
+     * @param filters 筛选条件
+     */
+    socket.on('unread_message_count', function (requestId, peerId, filters) {
+        
     });
 
 

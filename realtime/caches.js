@@ -38,17 +38,20 @@ exports.ifPeerAffairRelation = function (roleId_1, roleId_2, affairId) {
     var value = getCacheContentUtil(roleId_1, roleId_2);
     value += ('@' + affairId);
 
+   
     return new Promise(function (resolve, reject) {
         redisClient.sismember(affairRelationKey, value, function (error, res) {
             if(error){
                 reject(error);
             }else{
                 if(res ==1){
+                    console.log('------------redis缓存命中--------------');
                     resolve(true);
                 }else{   //如果在缓存中没有查到该关系项则去Mysql数据库中查询
                     mysqlService.ifInSameAffair(roleId_1, roleId_2, affairId)
                         .then(function (res) {
                             if(res){     //如果在Mysql数据库中查询到在同一个事务中则添加到缓存中
+                                console.log('------------记录到redis中--------------');
                                 exports.setPeerAffairRelationCache(roleId_1, roleId_2, affairId);
                                 resolve(true);
                             }else{
@@ -183,7 +186,7 @@ exports.ifPeerInGroup = function (roleId, groupId) {
  * @returns {string}
  */
 function getCacheContentUtil(roleId_1, roleId_2){
-    return roleId_1 <= roleId_2 ? (roleId_1 + '-' + roleId_2) : (roleId_2 + '-' + roleId_1);   //TODO 确认这样比较字符串是否会有问题
+    return roleId_1 <= roleId_2 ? (roleId_1 + '-' + roleId_2) : (roleId_2 + '-' + roleId_1);   
 };
 
 
