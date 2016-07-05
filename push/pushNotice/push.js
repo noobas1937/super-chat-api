@@ -10,26 +10,26 @@ var push = new ALY.PUSH({
     }
 );
 
-exports.pushNoticeToAndroid = function (summary) {
+exports.pushNoticeToAndroid = function (message) {
     push.pushNoticeToAndroid({
         AppKey: '23396884',
         Target: 'all', // 推送目标: device：推送给指定设备； account：推送给指定帐号；all：推送给全部
         TargetValue: 'all',
         Title: 'title',
-        Summary: summary,
+        Summary: message.content,
         AndroidExtParameters: '{\"id\":1002,\"content\":\"Hello OpenAPI!\"}'
     }, function (err, res) {
         console.log(err, res);
     });
 };
 
-exports.pushNoticeToiOS = function (summary) {
+exports.pushNoticeToiOS = function (message) {
     push.pushNoticeToiOS({
         AppKey: '23396884',
         Target: 'all', // 推送目标: device：推送给指定设备； account：推送给指定帐号；all：推送给全部
         TargetValue: 'all',
         Title: 'title',
-        Summary: summary,
+        Summary: message.content,
         AndroidExtParameters: '{\"id\":1002,\"content\":\"Hello OpenAPI!\"}'
     }, function (err, res) {
         console.log(err, res);

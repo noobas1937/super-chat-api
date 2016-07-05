@@ -19,3 +19,4 @@ pom.xml.asc
 .DS_Store
 /node_modules
 *.pyc
+push/aliyun-sdk-js/node_modules/coffeeify/node_modules/coffee-script/LICENSE
