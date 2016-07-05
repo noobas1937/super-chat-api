@@ -8,10 +8,10 @@ socket.on("connect", function () {
     console.log('connect to server');
 });
 
-socket.emit('sign_in', 'requestId', '123', '9ed3838e-6242-4df9-b5b9-b64b47f37e85', 'web');  //requestId token peerId userAgent
+socket.emit('sign_in', 'requestId', '123', '10524b64-d0cc-4be0-8aff-aa00ecb1084c', 'web');  //requestId token peerId userAgent
 
 
-socket.emit('peers_status', 'requestId', '9ed3838e-6242-4df9-b5b9-b64b47f37e85');
+socket.emit('peers_status', 'requestId', '10524b64-d0cc-4be0-8aff-aa00ecb1084c');
 
 
 socket.on('peers_status_response', function (res) {
@@ -23,4 +23,3 @@ socket.on('message', function (msg) {
     console.log('收到消息:');
     console.log(msg);
 });
-

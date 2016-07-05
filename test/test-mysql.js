@@ -28,7 +28,7 @@ db.query('SELECT role_id FROM discuss_group_member WHERE group_id = ?',
         if(err){
             console.log(err);
         }else{
-            console.log('-------------group user_ids------------');
+            console.log('-------------group role_ids------------');
             _.each(info, function(item){
                 console.log(item.role_id);
             });

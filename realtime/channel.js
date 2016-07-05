@@ -193,7 +193,7 @@ exports.handleNewChannel = function (socket) {
         var serverTimestamp = new Date();
     
 
-        if (msgType.indexOf("chat") == 0) {//单人聊天
+        if (msgType == 1) {//单人聊天
             if (affairId == consts.friend_key) {  //朋友聊天
                 exports.sendMessageToFriend(fromRole, toUserId, toRole, message, msg)
                     .then(function (res) {
@@ -214,7 +214,7 @@ exports.handleNewChannel = function (socket) {
                         socket.emit('message_response', error);
                     });
             }
-        } else if (msgType.indexOf('group')) {//群组聊天
+        } else if (msgType == 2) {//群组聊天
             exports.sendMessageToGroup(message, groupId)
                 .then(function (res) {
                     var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
@@ -222,9 +222,9 @@ exports.handleNewChannel = function (socket) {
                 }, function (error) {
                     socket.emit('message_response', error);
                 });
-        } else if (msgType.indexOf('multi')) {//发送多人信息聊天
-            var toUserIds = msgJson['toUserIds'];
-            var toRoleIds = msgJson['toRoleIds'];
+        } else if (msgType == 4) {//发送多人信息聊天
+            var toUserIds = message.toUserIds;
+            var toRoleIds = message.toRoleIds;
             if (affairId == consts.friend_key) {//朋友聊天
                 var index = 0;
                 _.each(toUserIds, function (m_toUserId) {
