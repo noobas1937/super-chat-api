@@ -6,7 +6,8 @@ var mongoose = require('mongoose')
     , _ = require('underscore')
     , Message = require('./models').Message
     , LastReadTime = require('./models').LastReadTime
-    , messageService = require('./message');
+    , messageService = require('./message')
+    , push = require('../push/pushNotice/push');
 
 //在线用户的所有channelId(一个用户可能多处登录
 var peerChannels = exports.peerChannels = {};
@@ -32,7 +33,10 @@ exports.sendMessageToPeer = function (message, toPeerId) {
                     }
                 }
             });
-        } 
+        }
+        else{
+            push.pushNoticeToAndroid(message)
+        }
     });
 };
 
