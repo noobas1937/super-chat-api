@@ -3,7 +3,7 @@ var channelService = require('../realtime/channel');
 
 
 var message = {
-    'type': 'chat',
+    'type': '1',
     'fromId': '0f2f6985-1c62-43bd-8301-45fc8bf38ce4',
     'fromRole': 'aa8af1fa-bdde-4ecb-a87b-6bcfa91b5ce3',
     'toUserId': '9ed3838e-6242-4df9-b5b9-b64b47f37e85',

@@ -6,7 +6,8 @@ var mongoose = require('mongoose')
     , _ = require('underscore')
     , Message = require('./models').Message
     , LastReadTime = require('./models').LastReadTime
-    , messageService = require('./message');
+    , messageService = require('./message')
+    , push = require('../push/pushNotice/push');
 
 //在线用户的所有channelId(一个用户可能多处登录
 var peerChannels = exports.peerChannels = {};
@@ -32,7 +33,10 @@ exports.sendMessageToPeer = function (message, toPeerId) {
                     }
                 }
             });
-        } 
+        }
+        else{
+            push.pushNoticeToAndroid(message);
+        }
     });
 };
 
@@ -100,6 +104,7 @@ exports.sendMessageToFriend = function (fromRole, toUserId, toRole, message, msg
  * 向多人发送信息
  */
 exports.sendMessageToMultiplePeers = function (message, toPeerIds) {
+    console.log('------------开始群发信息啦--------------');
     _.each(toPeerIds, function (peerId) {
         exports.sendMessageToPeer(message, peerId);
     });
@@ -109,18 +114,26 @@ exports.sendMessageToMultiplePeers = function (message, toPeerIds) {
 /**
  * 发送Group消息
  */
-exports.sendMessageToGroup = function (requestId, message, roleId, groupId, msg) {
+exports.sendMessageToGroup = function (fromId, groupId, message, msg) {
     return new Promise(function (resolve, reject) {
-        caches.ifPeerInGroup(roleId, groupId)
+        console.log('------------判断发送者是否在当前group中--------------');
+        caches.ifPeerInGroup(fromId, groupId)
             .then(function (res) {
                 if (res) {  //如果给Group发送信息的人在Group中 则给Group中所有在线的人员发送消息
-                    var groupPeers = caches.getGroupMemberList(groupId);
-                    exports.sendMessageToMultiplePeers(message, groupPeers);
+                    caches.getGroupMemberList(groupId).then(function (data) {
+                        console.log('------------开始发送信息--------------');
+                        exports.sendMessageToMultiplePeers(message, data);
+                    }, function (error) {
+
+                    });
+
                     msg['key'] = groupId; //如果是群发消息则将groupId设为key
-                    msg.save(function (error) {
-                        reject(error);
-                    }, function (res) {
-                        resolve(res);
+                    msg.save(function (error, res) {
+                        if(error){
+                            reject(error);
+                        }else{
+                            resolve(res);
+                        }
                     });
                 } else {
                     reject(new Error('No Permission: 用户不在当前Group中'));
@@ -169,6 +182,7 @@ exports.handleNewChannel = function (socket) {
     socket.on('send_message', function (requestId, message) {
 
         var msgType = message.type;
+        var fromId = message.fromId;
         var fromRole = message.fromRole;
         var toUserId = message.toUserId;
         var toRole = message.toRole;
@@ -193,7 +207,7 @@ exports.handleNewChannel = function (socket) {
         var serverTimestamp = new Date();
     
 
-        if (msgType.indexOf("chat") == 0) {//单人聊天
+        if (msgType == 1) {//单人聊天
             if (affairId == consts.friend_key) {  //朋友聊天
                 exports.sendMessageToFriend(fromRole, toUserId, toRole, message, msg)
                     .then(function (res) {
@@ -214,17 +228,17 @@ exports.handleNewChannel = function (socket) {
                         socket.emit('message_response', error);
                     });
             }
-        } else if (msgType.indexOf('group')) {//群组聊天
-            exports.sendMessageToGroup(message, groupId)
+        } else if (msgType == 2) {//群组聊天
+            exports.sendMessageToGroup(fromId, groupId, message, msg)
                 .then(function (res) {
                     var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                     socket.emit('message_response', m_res);
                 }, function (error) {
                     socket.emit('message_response', error);
                 });
-        } else if (msgType.indexOf('multi')) {//发送多人信息聊天
-            var toUserIds = msgJson['toUserIds'];
-            var toRoleIds = msgJson['toRoleIds'];
+        } else if (msgType == 4) {//发送多人信息聊天
+            var toUserIds = message.toUserIds;
+            var toRoleIds = message.toRoleIds;
             if (affairId == consts.friend_key) {//朋友聊天
                 var index = 0;
                 _.each(toUserIds, function (m_toUserId) {
