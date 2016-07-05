@@ -35,7 +35,7 @@ exports.sendMessageToPeer = function (message, toPeerId) {
             });
         }
         else{
-            push.pushNoticeToAndroid(message)
+            push.pushNoticeToAndroid(message);
         }
     });
 };
