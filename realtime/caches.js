@@ -56,8 +56,8 @@ exports.ifPeerAffairRelation = function (roleId_1, roleId_2, affairId) {
                         .then(function (res) {
                             if(res){     //如果在Mysql数据库中查询到在同一个事务中则添加到缓存中
                                 console.log('------------记录到redis中--------------');
-                                exports.setPeerAffairRelationCache(roleId_1, roleId_2, affairId);
                                 resolve(true);
+                                exports.setPeerAffairRelationCache(roleId_1, roleId_2, affairId);
                             }else{
                                 resolve(false);
                             }
