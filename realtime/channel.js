@@ -69,6 +69,7 @@ exports.sendMessageToAffairPeer = function (fromRole, toUserId, toRole, affairId
                     reject(new Error('No permission: 两个User Role不在同一个事务中.'));
                 }
             }, function (error) {
+                console.log('------------caches层发生错误--------------');
                 reject(error);
             });
     });

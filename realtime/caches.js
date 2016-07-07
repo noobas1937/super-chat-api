@@ -62,6 +62,7 @@ exports.ifPeerAffairRelation = function (roleId_1, roleId_2, affairId) {
                                 resolve(false);
                             }
                         }, function (error) {
+                            console.log('------------ifInSameAffair出错--------------');
                             reject(error);
                         });
                 }

@@ -48,6 +48,7 @@ exports.ifInSameAffair = function(roleId_1, roleId_2, affairId){
             [affairId, roleId_1, roleId_2],
             function(err, info){
                 if(err){
+                    console.log('------------mysql数据库操作出错--------------');
                     reject(err);
                 }else{
                     if(info.length == 2){ //如果 info.length == 2 说明两个用户都在当前事务里
