@@ -25,7 +25,11 @@ var redisClient = redis.createClient(consts.redis_uri);
 exports.setPeerAffairRelationCache = function (roleId_1, roleId_2, affairId) {
     var value = getCacheContentUtil(roleId_1, roleId_2);
     value += ('@' + affairId);
-    return redisClient.saddAsync(affairRelationKey, value); //向缓存中添加新的关系项
+    return redisClient.saddAsync(affairRelationKey, value).then(function (res) {
+
+    }, function (error) {
+        console.log('----------'+ error +'----------');
+    });//向缓存中添加新的关系项
 };
 
 /**
@@ -52,12 +56,13 @@ exports.ifPeerAffairRelation = function (roleId_1, roleId_2, affairId) {
                         .then(function (res) {
                             if(res){     //如果在Mysql数据库中查询到在同一个事务中则添加到缓存中
                                 console.log('------------记录到redis中--------------');
-                                exports.setPeerAffairRelationCache(roleId_1, roleId_2, affairId);
                                 resolve(true);
+                                exports.setPeerAffairRelationCache(roleId_1, roleId_2, affairId);
                             }else{
                                 resolve(false);
                             }
                         }, function (error) {
+                            console.log('------------ifInSameAffair出错--------------');
                             reject(error);
                         });
                 }
