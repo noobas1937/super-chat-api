@@ -25,7 +25,11 @@ var redisClient = redis.createClient(consts.redis_uri);
 exports.setPeerAffairRelationCache = function (roleId_1, roleId_2, affairId) {
     var value = getCacheContentUtil(roleId_1, roleId_2);
     value += ('@' + affairId);
-    return redisClient.saddAsync(affairRelationKey, value); //向缓存中添加新的关系项
+    return redisClient.saddAsync(affairRelationKey, value).then(function (res) {
+
+    }, function (error) {
+        console.log('----------'+ error +'----------');
+    });//向缓存中添加新的关系项
 };
 
 /**
