@@ -11,3 +11,7 @@ LastReadTime.find({}, function (error, res) {
     console.log(res);
 });
 
+LastReadTime.count({}, function (error, res) {
+    console.log(res);
+});
+

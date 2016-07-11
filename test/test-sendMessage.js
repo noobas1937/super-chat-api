@@ -23,7 +23,7 @@ var message = {
 
 socket.emit('send_message', 'requestId', message);
 
-socket.on('message_response', function (res) {
+socket.on('response', function (res) {
     console.log('get response!');
     console.log(res);
 });

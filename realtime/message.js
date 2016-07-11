@@ -1,5 +1,6 @@
 var models = require('./models'),
     Message = models.Message,
+    LastReadTime = models.LastReadTime,
     _ = require('underscore');
 
 /**
@@ -33,4 +34,92 @@ exports.findMessage = function (beginTime, endTime, limit, filters) {
             }
         });
     });
-}
+};
+
+/**
+ * 设置readTime
+ * @param userId
+ * @param filters
+ */
+exports.markReadTime = function (userId, filters) {
+    return new Promise(function (resolve, reject) {
+        var data = {'userId': userId};
+        if(_.isObject(filters)){
+            var keys = _.keys(filters);
+            _.each(keys, function (key) {
+                data[key] = filters[key];
+            });
+        }
+        var lastReadTime = new LastReadTime(data);
+        lastReadTime['timestamp'] = Date.now();
+        LastReadTime.find(filters, function(error, res){
+            if(error){
+                reject(error);
+            }else{
+                if(res.length == 0){//如果尚未有对应的记录
+                    lastReadTime.save();
+                }else if(res.length == 1){//如果已经有了对应的记录
+                    var _id = res[0]._id;
+                    LastReadTime.update({'_id': _id}, {'timestamp' : Date.now()}, function (error, res) {
+                        if(error){
+                            reject(error);
+                        }else{
+                            resolve(res);
+                        }
+                    });
+                }else {
+                    reject(new Error('一个用户对应多个read_time'));
+                }
+            }
+        });
+    });
+};
+
+/**
+ * 获得一个会话的未读消息数量
+ * @param userId
+ * @param filters
+ * @returns {Promise}
+ */
+exports.getUnreadMessage = function (userId, filters) {
+    return new Promise(function (resolve, reject) {
+        var timeFilters = new Object(filters);
+        timeFilters.userId = userId;
+        exports.getLastReadTime(timeFilters).then(function (res) {
+            var lastReadTime = res;
+            filters.timestamp = {'&gte': lastReadTime};
+            Message.count(filters, function (error, res) {
+                if(error){
+                    reject(error);
+                }else{
+                    resolve(res);
+                }
+            });
+        }, function (error) {
+            reject(error);
+        });
+    });
+};
+
+/**
+ * 获得一个会话的lastReadTime
+ * @param filters
+ * @returns {Promise}
+ */
+exports.getLastReadTime = function (filters) {
+    return new Promise(function (resolve, reject) {
+        LastReadTime.find(filters, function (error, res) {
+            if(error){
+                reject(error);
+            }else{
+                if(res.length == 1){
+                    resolve(res[0].timestamp);
+                }else {
+                    reject(new Error('一个用户对应多个read_time.'));
+                }
+            }
+        });
+    });
+};
+
+

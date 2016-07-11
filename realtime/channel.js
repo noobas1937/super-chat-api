@@ -206,9 +206,9 @@ exports.handleNewChannel = function (socket) {
                 exports.sendMessageToFriend(fromRole, toUserId, toRole, message, msg)
                     .then(function (res) {
                         var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
-                        socket.emit('message_response', m_res);
+                        socket.emit('response', m_res);
                     }, function (error) {
-                        socket.emit('message_response', error);
+                        socket.emit('response', error);
                     });
             } else {//事务内聊天
                 console.log('------------进行affair聊天--------------');
@@ -216,19 +216,19 @@ exports.handleNewChannel = function (socket) {
                     .then(function (res) {
                         console.log('------------信息save成功--------------');
                         var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
-                        socket.emit('message_response', m_res);
+                        socket.emit('response', m_res);
                     }, function (error) {
                         console.log('------------信息save失败--------------');
-                        socket.emit('message_response', error);
+                        socket.emit('response', error);
                     });
             }
         } else if (msgType == 2) {//群组聊天
             exports.sendMessageToGroup(fromId, groupId, message, msg)
                 .then(function (res) {
                     var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
-                    socket.emit('message_response', m_res);
+                    socket.emit('response', m_res);
                 }, function (error) {
-                    socket.emit('message_response', error);
+                    socket.emit('response', error);
                 });
         } else if (msgType == 4) {//发送多人信息聊天
             var toUserIds = message.toUserIds;
@@ -240,9 +240,9 @@ exports.handleNewChannel = function (socket) {
                     exports.sendMessageToFriend(fromRole, m_toUserId, m_toRole, message, msg)
                         .then(function (res) {
                             var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
-                            socket.emit('message_response', m_res);
+                            socket.emit('response', m_res);
                         }, function (error) {
-                            socket.emit('message_response', error);
+                            socket.emit('response', error);
                         });
                 });
             } else {//事务内聊天
@@ -252,9 +252,9 @@ exports.handleNewChannel = function (socket) {
                     exports.sendMessageToAffairPeer(fromRole, m_toUserId, m_toRole, affairId, message, msg)
                         .then(function (res) {
                             var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
-                            socket.emit('message_response', m_res);
+                            socket.emit('response', m_res);
                         }, function (error) {
-                            socket.emit('message_response', error);
+                            socket.emit('response', error);
                         });
                 });
             }
@@ -309,31 +309,7 @@ exports.handleNewChannel = function (socket) {
      * @param filters 是单人聊天还是多人聊
      */
     socket.on('mark_read_time', function (peerId, filters) {
-        var data = {'userId': peerId};
-        if(_.isObject(filters)){
-            var keys = _.keys(filters);
-            _.each(keys, function (key) {
-                data[key] = filters[key];
-            });
-        }
-        var lastReadTime = new LastReadTime(data);
-        lastReadTime['timestamp'] = Date.now();
-        LastReadTime.find(filters, function(error, res){
-            if(error){
-                
-            }else{
-                if(res.length == 0){//如果尚未有对应的记录
-                    lastReadTime.save();
-                }else if(res.length == 1){//如果已经有了对应的记录
-                    var _id = res[0]._id;
-                    LastReadTime.update({'_id': _id}, {'timestamp' : Date.now()}, function (error, res) {
-
-                    });
-                }else {
-                    throw new Error('一个用户对应多个read_time');
-                }
-            }
-        });
+        messageService.markReadTime(peerId, filters);
     });
 
     /**
@@ -402,16 +378,6 @@ exports.getOnlineChannelPeerIds = function () {
     });
 };
 
-
-/**
- * 获得两人之前的聊天的key的Util方法
- * @param roleId_1
- * @param roleId_2
- * @returns {string}
- */
-exports.getKeyUtil = function (roleId_1, roleId_2) {
-    return roleId_1 <= roleId_2 ? (roleId_1 + '@' + roleId_2) : (roleId_2 + '@' + roleId_1);
-};
 
 exports.clearChannel = function (ch) {
     if (ch && ch.peerId && ch.id) {

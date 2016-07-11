@@ -21,8 +21,8 @@ var MessageSchema = new Schema({
     toUserId: String,
     toRole : {type: String, index: true},
     affairId : {type: String, index: true},
-    toUserIds : [],
-    toRoleIds : [],
+    toUserIds : Array,
+    toRoleIds : Array,
     groupId : String,  
     content: {}   //存放message
 });
