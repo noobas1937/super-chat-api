@@ -318,7 +318,11 @@ exports.handleNewChannel = function (socket) {
      * @param filters 筛选条件
      */
     socket.on('unread_message_count', function (requestId, peerId, filters) {
-        
+        messageService.getUnreadMessageCount(peerId, filters).then(function (res) {
+            socket.emit('response', res);
+        }, function (error) {
+            socket.emit('response', error);
+        });
     });
 
 

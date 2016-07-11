@@ -81,7 +81,7 @@ exports.markReadTime = function (userId, filters) {
  * @param filters
  * @returns {Promise}
  */
-exports.getUnreadMessage = function (userId, filters) {
+exports.getUnreadMessageCount = function (userId, filters) {
     return new Promise(function (resolve, reject) {
         var timeFilters = new Object(filters);
         timeFilters.userId = userId;
