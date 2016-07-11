@@ -19,7 +19,10 @@ exports.findMessage = function (beginTime, endTime, limit, filters) {
         query.timestamp = {'$gte': beginTime, '$lte': endTime};  //TODO 防御式编程以及确定timestamp的格式
 
         if(_.isObject(filters)){
-            
+            var keys = _.keys(filters);
+            _.each(keys, function (key) {
+                query[key] = filters[key];
+            });
         }
 
         Message.find(query).sort([['timestamp', 'descending']]).limit(limit).maxTime(1000).exec(function (err, records) {

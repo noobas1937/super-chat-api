@@ -1,7 +1,3 @@
-/**
- * Created by xmc1993 on 16/6/30.
- */
-
 var io = require('socket.io-client');
 var socket = io.connect('ws://localhost:3000');
 socket.on("connect", function () {
@@ -24,3 +20,8 @@ socket.on('message', function (msg) {
     console.log(msg);
 });
 
+var filters = {
+    groupId: 'test-test-test-test-test'
+}
+
+socket.emit('mark_read_time', '9ed3838e-6242-4df9-b5b9-b64b47f37e85', filters);

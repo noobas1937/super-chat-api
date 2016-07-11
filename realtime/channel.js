@@ -55,8 +55,6 @@ exports.sendMessageToAffairPeer = function (fromRole, toUserId, toRole, affairId
                 if (res) {//如果聊天的双发在同一个affair中
                     console.log('------------用户在同一个affair中并发送信息--------------');
                     exports.sendMessageToPeer(message, toUserId);
-                    msg['key'] = exports.getKeyUtil(fromRole, toRole);
-                    //TODO msg中要加入key
                     console.log('------------准备save msg--------------');
                     msg.save(function (error, res) {
                         if(error){
@@ -87,7 +85,6 @@ exports.sendMessageToFriend = function (fromRole, toUserId, toRole, message, msg
         caches.ifPeerFriendRelation(fromRole, toRole).then(function (res) {
             if (res) {
                 exports.sendMessageToPeer(message, toUserId);
-                msg['key'] = exports.getKeyUtil(fromRole, toRole);  //设置msg的key
                 msg.save(function (error) {
                     reject(error);
                 }, function (res) {
@@ -189,18 +186,14 @@ exports.handleNewChannel = function (socket) {
         var toRole = message.toRole;
         var affairId = message.affairId;
         var groupId = message.groupId;
-        var _message = JSON.stringify(message);
 
+        //MessageSchema生成msg
         var msg = new Message({
-            'type': msgType,
-            'key': '',
             'timestamp': Date.now(),
-            'fromId': message.fromId,
-            'fromRole': fromRole,
-            'affairId': affairId,
-            'toUserId': toUserId,
-            'toRole': toRole,
-            'content': _message
+        });
+        var keys = _.keys(message);
+        _.each(keys, function(key){
+            msg[key] = message[key];
         });
 
 
@@ -222,7 +215,7 @@ exports.handleNewChannel = function (socket) {
                 exports.sendMessageToAffairPeer(fromRole, toUserId, toRole, affairId, message, msg)
                     .then(function (res) {
                         console.log('------------信息save成功--------------');
-                        var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
+                        var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
                         socket.emit('message_response', m_res);
                     }, function (error) {
                         console.log('------------信息save失败--------------');
@@ -232,7 +225,7 @@ exports.handleNewChannel = function (socket) {
         } else if (msgType == 2) {//群组聊天
             exports.sendMessageToGroup(fromId, groupId, message, msg)
                 .then(function (res) {
-                    var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
+                    var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
                     socket.emit('message_response', m_res);
                 }, function (error) {
                     socket.emit('message_response', error);
@@ -246,7 +239,7 @@ exports.handleNewChannel = function (socket) {
                     var m_toRole = toRoleIds[index++];
                     exports.sendMessageToFriend(fromRole, m_toUserId, m_toRole, message, msg)
                         .then(function (res) {
-                            var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
+                            var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
                             socket.emit('message_response', m_res);
                         }, function (error) {
                             socket.emit('message_response', error);
@@ -313,19 +306,34 @@ exports.handleNewChannel = function (socket) {
 
     /**
      * @param peerId userId
-     * @param filters 是单人聊天还是多人聊天????  这里我觉得应该放在取channel
+     * @param filters 是单人聊天还是多人聊
      */
     socket.on('mark_read_time', function (peerId, filters) {
         var data = {'userId': peerId};
         if(_.isObject(filters)){
             var keys = _.keys(filters);
-            _.each(keys, function (key) {     //TODO 是否有需要验证null undefine 等
+            _.each(keys, function (key) {
                 data[key] = filters[key];
             });
         }
         var lastReadTime = new LastReadTime(data);
-        
-        lastReadTime.save();
+        lastReadTime['timestamp'] = Date.now();
+        LastReadTime.find(filters, function(error, res){
+            if(error){
+                
+            }else{
+                if(res.length == 0){//如果尚未有对应的记录
+                    lastReadTime.save();
+                }else if(res.length == 1){//如果已经有了对应的记录
+                    var _id = res[0]._id;
+                    LastReadTime.update({'_id': _id}, {'timestamp' : Date.now()}, function (error, res) {
+
+                    });
+                }else {
+                    throw new Error('一个用户对应多个read_time');
+                }
+            }
+        });
     });
 
     /**

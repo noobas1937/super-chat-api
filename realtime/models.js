@@ -13,23 +13,28 @@ var Schema = mongoose.Schema;
 //TODO 针对后期的查询做索引优化(目前Index的使用比较粗略)以及原系统的filter的使用策略暂时还不够明确
 var MessageSchema = new Schema({
     type : {type: String, index: true},  //用于存储消息的类型提高信息检索的效率
-    key : {type: String, index: true},   //用于查询历史信息的key如果是群聊天key为GroupId 如果两人聊天则为RoleId_1@RoleId_2的形式
+    subType: String,
+    displayName: String,
     timestamp: Number,  //时间戳用于和时间有关的查询
     fromId : {type: String, index: true},
-    affairId : {type: String, index: true},
     fromRole : {type: String, index: true},
-    toRole : {type: String, index: true},
     toUserId: String,
+    toRole : {type: String, index: true},
+    affairId : {type: String, index: true},
+    toUserIds : [],
+    toRoleIds : [],
     groupId : String,  
-    content: String   //存放message
+    content: {}   //存放message
 });
 
 
 var LastReadTimeSchema = new Schema({
     userId : String,
-    toUserId : String,
-    affairId : String,
-    groupId : String
+    roleId1 : String,
+    roleId2: String,
+    affairId: String,
+    groupId: String,
+    timestamp: Number
 });
 
 var Message = mongoose.model('Message', MessageSchema, 'Messages');
