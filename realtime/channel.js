@@ -298,9 +298,9 @@ exports.handleNewChannel = function (socket) {
     socket.on('find_message', function (requestId, beginTime, endTime, limit, filters) {
         messageService.findMessage(beginTime, endTime, limit, filters)
             .then(function (res) {
-                socket.emit('message_history', {'requestId': requestId, 'list': res});
+                socket.emit('response', {'requestId': requestId, 'list': res});
         }, function (error) {
-            socket.emit('message_history', {'requestId': requestId, 'error': error});
+            socket.emit('response', {'requestId': requestId, 'error': error});
         });
     });
 
