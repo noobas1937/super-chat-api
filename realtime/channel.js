@@ -208,7 +208,7 @@ exports.handleNewChannel = function (socket) {
                         var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                         socket.emit('response', m_res);
                     }, function (error) {
-                        socket.emit('response', error);
+                        socket.emit('response', {'requestId': requestId, 'error': error});
                     });
             } else {//事务内聊天
                 console.log('------------进行affair聊天--------------');
@@ -219,7 +219,7 @@ exports.handleNewChannel = function (socket) {
                         socket.emit('response', m_res);
                     }, function (error) {
                         console.log('------------信息save失败--------------');
-                        socket.emit('response', error);
+                        socket.emit('response', {'requestId': requestId, 'error': error});
                     });
             }
         } else if (msgType == 2) {//群组聊天
@@ -228,7 +228,7 @@ exports.handleNewChannel = function (socket) {
                     var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
                     socket.emit('response', m_res);
                 }, function (error) {
-                    socket.emit('response', error);
+                    socket.emit('response', {'requestId': requestId, 'error': error});
                 });
         } else if (msgType == 4) {//发送多人信息聊天
             var toUserIds = message.toUserIds;
@@ -242,7 +242,7 @@ exports.handleNewChannel = function (socket) {
                             var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
                             socket.emit('response', m_res);
                         }, function (error) {
-                            socket.emit('response', error);
+                            socket.emit('response', {'requestId': requestId, 'error': error});
                         });
                 });
             } else {//事务内聊天
@@ -254,7 +254,7 @@ exports.handleNewChannel = function (socket) {
                             var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
                             socket.emit('response', m_res);
                         }, function (error) {
-                            socket.emit('response', error);
+                            socket.emit('response', {'requestId': requestId, 'error': error});
                         });
                 });
             }
@@ -300,7 +300,7 @@ exports.handleNewChannel = function (socket) {
             .then(function (res) {
                 socket.emit('message_history', {'requestId': requestId, 'list': res});
         }, function (error) {
-            socket.emit('message_history', error);
+            socket.emit('message_history', {'requestId': requestId, 'error': error});
         });
     });
 
@@ -319,9 +319,9 @@ exports.handleNewChannel = function (socket) {
      */
     socket.on('unread_message_count', function (requestId, peerId, filters) {
         messageService.getUnreadMessageCount(peerId, filters).then(function (res) {
-            socket.emit('response', res);
+            socket.emit('response', {'requestId': requestId, 'count': res});
         }, function (error) {
-            socket.emit('response', error);
+            socket.emit('response', {'requestId': requestId, 'error': error});
         });
     });
 
