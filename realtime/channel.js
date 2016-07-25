@@ -319,7 +319,7 @@ exports.handleNewChannel = function (socket) {
      */
     socket.on('unread_message_count', function (requestId, peerId, filters) {
         messageService.getUnreadMessageCount(peerId, filters).then(function (res) {
-            socket.emit('response', {'requestId': requestId, 'count': res});
+            socket.emit('response', {'requestId': requestId, 'msg': res});
         }, function (error) {
             socket.emit('response', {'requestId': requestId, 'error': error});
         });

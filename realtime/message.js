@@ -87,12 +87,24 @@ exports.getUnreadMessageCount = function (userId, filters) {
         timeFilters.userId = userId;
         exports.getLastReadTime(timeFilters).then(function (res) {
             var lastReadTime = res;
-            filters.timestamp = {'&gte': lastReadTime};
+            filters.timestamp = {'$gte': lastReadTime, '$lte': Date.now()};
+            console.log('-----------开始查询未读消息数量--------');
             Message.count(filters, function (error, res) {
                 if(error){
+                    console.log('-----------查询未读消息时发生错误--------');
                     reject(error);
                 }else{
-                    resolve(res);
+                    if(res == 0) {
+                        resolve({'count': res, 'lastReadTime': lastReadTime, 'latestUnreadMessage': {}});
+                    }else{
+                        Message.find(filters).limit(0).exec(function (error, msg) {
+                            if(error){
+                                reject(error);
+                            }else{
+                                resolve({'count': res, 'lastReadTime': lastReadTime, 'latestUnreadMessage': msg[0]});
+                            }
+                        });
+                    }
                 }
             });
         }, function (error) {
@@ -110,9 +122,14 @@ exports.getLastReadTime = function (filters) {
     return new Promise(function (resolve, reject) {
         LastReadTime.find(filters, function (error, res) {
             if(error){
+                console.log('------------getLastReadTime出错------------');
                 reject(error);
             }else{
-                if(res.length == 1){
+                console.log('------------getLastReadTime成功------------');
+                if(res.length == 0){//如果两人还没聊过天 返回当前时间
+                    resolve(Date.now());
+                }
+                else if(res.length == 1){
                     resolve(res[0].timestamp);
                 }else {
                     reject(new Error('一个用户对应多个read_time.'));
