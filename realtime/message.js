@@ -94,9 +94,6 @@ exports.getUnreadMessageCount = function (userId, filters) {
                     console.log('-----------查询未读消息时发生错误--------');
                     reject(error);
                 }else{
-                    if(res == 0) {
-                        resolve({'count': res, 'lastReadTime': lastReadTime, 'latestUnreadMessage': {}});
-                    }else{
                         Message.find(filters).limit(0).exec(function (error, msg) {
                             if(error){
                                 reject(error);
@@ -104,7 +101,6 @@ exports.getUnreadMessageCount = function (userId, filters) {
                                 resolve({'count': res, 'lastReadTime': lastReadTime, 'latestUnreadMessage': msg[0]});
                             }
                         });
-                    }
                 }
             });
         }, function (error) {
