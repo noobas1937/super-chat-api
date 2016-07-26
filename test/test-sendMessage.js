@@ -9,7 +9,7 @@ socket.on("connect", function () {
     console.log('connect to server');
 });
 
-socket.emit('sign_in', 'requestId', '123', 'f2f6985-1c62-43bd-8301-45fc8bf38ce4', 'web');
+socket.emit('sign_in', 'requestId', '123', '0f2f6985-1c62-43bd-8301-45fc8bf38ce4', 'web');
 
 var message = {
     'type': 1,

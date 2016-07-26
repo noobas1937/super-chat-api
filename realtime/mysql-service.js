@@ -16,7 +16,11 @@ exports.getUserIdByRoleId = function (roleId) {
                 if(err){
                     reject(err);
                 }else{
-                    resolve(info[0].user_id);
+                    if(info.length == 0){
+                        reject(new Error('roleId not found'));
+                    }else {
+                        resolve(info[0].user_id);
+                    }
                 }
             });
     });
