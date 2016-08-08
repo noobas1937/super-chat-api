@@ -195,7 +195,9 @@ exports.handleNewChannel = function (socket) {
                 socket.emit('response', {'requestId': requestId, 'error': error});
             });
 
-
+        /**
+         * 发送消息
+         */
         function sendMessage() {
             //MessageSchema生成msg
             var msg = new Message({
@@ -278,6 +280,11 @@ exports.handleNewChannel = function (socket) {
 
         }
 
+        /**
+         * 验证发送用户的RoleId和channel的peerId是否一致
+         * @param res
+         * @returns {Promise}
+         */
         function checkFromId(res) {
             console.log('------------checkFromId的参数为-----------');
             console.log(res);
