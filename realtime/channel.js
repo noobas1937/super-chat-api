@@ -197,22 +197,21 @@ exports.handleNewChannel = function (socket) {
 
 
         function sendMessage() {
-            mysqlService.getUserIdByRoleId(toRole)
-                .then(function (res) {//获取toRole的userId
-                    message.toUserId = res;
-                    toUserId = message.toUserId;
-
-                    //MessageSchema生成msg
-                    var msg = new Message({
-                        'timestamp': Date.now(),
-                    });
-                    var keys = _.keys(message);
-                    _.each(keys, function (key) {
-                        msg[key] = message[key];
-                    });
-                    //给要转发的消息加上时间戳
-                    var serverTimestamp = new Date();
-                    if (msgType == 1) {//单人聊天
+            //MessageSchema生成msg
+            var msg = new Message({
+                'timestamp': Date.now(),
+            });
+            var keys = _.keys(message);
+            _.each(keys, function (key) {
+                msg[key] = message[key];
+            });
+            //给要转发的消息加上时间戳
+            var serverTimestamp = new Date();
+            if (msgType == 1) {//单人聊天
+                mysqlService.getUserIdByRoleId(toRole)
+                    .then(function (res) {//获取toRole的userId
+                        message.toUserId = res;
+                        toUserId = message.toUserId;
                         if (affairId == consts.friend_key) {  //朋友聊天
                             exports.sendMessageToFriend(fromRole, toUserId, toRole, message, msg)
                                 .then(function (res) {
@@ -233,58 +232,61 @@ exports.handleNewChannel = function (socket) {
                                     socket.emit('response', {'requestId': requestId, 'error': error});
                                 });
                         }
-                    } else if (msgType == 2) {//群组聊天
-                        exports.sendMessageToGroup(fromId, groupId, message, msg)
+                    }, function (error) {
+                        console.log('------------获取toUserId出错-----------');
+                        console.log(error);
+                        socket.emit('response', {'requestId': requestId, 'error': error});
+                    });
+            } else if (msgType == 2) {//群组聊天
+                console.log('------------进行affair聊天--------------');
+                exports.sendMessageToGroup(fromId, groupId, message, msg)
+                    .then(function (res) {
+                        var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
+                        socket.emit('response', m_res);
+                    }, function (error) {
+                        socket.emit('response', {'requestId': requestId, 'error': error});
+                    });
+            } else if (msgType == 4) {//发送多人信息聊天
+                var toUserIds = message.toUserIds;
+                var toRoleIds = message.toRoleIds;
+                if (affairId == consts.friend_key) {//朋友聊天
+                    var index = 0;
+                    _.each(toUserIds, function (m_toUserId) {
+                        var m_toRole = toRoleIds[index++];
+                        exports.sendMessageToFriend(fromRole, m_toUserId, m_toRole, message, msg)
                             .then(function (res) {
                                 var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
                                 socket.emit('response', m_res);
                             }, function (error) {
                                 socket.emit('response', {'requestId': requestId, 'error': error});
                             });
-                    } else if (msgType == 4) {//发送多人信息聊天
-                        var toUserIds = message.toUserIds;
-                        var toRoleIds = message.toRoleIds;
-                        if (affairId == consts.friend_key) {//朋友聊天
-                            var index = 0;
-                            _.each(toUserIds, function (m_toUserId) {
-                                var m_toRole = toRoleIds[index++];
-                                exports.sendMessageToFriend(fromRole, m_toUserId, m_toRole, message, msg)
-                                    .then(function (res) {
-                                        var m_res = {'id': res._id, 'time': serverTimestamp, 'requestId': requestId};
-                                        socket.emit('response', m_res);
-                                    }, function (error) {
-                                        socket.emit('response', {'requestId': requestId, 'error': error});
-                                    });
+                    });
+                } else {//事务内聊天
+                    var index = 0;
+                    _.each(toUserIds, function (m_toUserId) {
+                        var m_toRole = toRoleIds[index++];
+                        exports.sendMessageToAffairPeer(fromRole, m_toUserId, m_toRole, affairId, message, msg)
+                            .then(function (res) {
+                                var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
+                                socket.emit('response', m_res);
+                            }, function (error) {
+                                socket.emit('response', {'requestId': requestId, 'error': error});
                             });
-                        } else {//事务内聊天
-                            var index = 0;
-                            _.each(toUserIds, function (m_toUserId) {
-                                var m_toRole = toRoleIds[index++];
-                                exports.sendMessageToAffairPeer(fromRole, m_toUserId, m_toRole, affairId, message, msg)
-                                    .then(function (res) {
-                                        var m_res = {'id': res, 'time': serverTimestamp, 'requestId': requestId};
-                                        socket.emit('response', m_res);
-                                    }, function (error) {
-                                        socket.emit('response', {'requestId': requestId, 'error': error});
-                                    });
-                            });
-                        }
-                    }
+                    });
+                }
+            }
 
-                }, function (error) {
-                    socket.emit('response', {'requestId': requestId, 'error': error});
-                });
         }
 
-        function checkFromId (res) {
+        function checkFromId(res) {
             console.log('------------checkFromId的参数为-----------');
             console.log(res);
             console.log(fromId);
             return new Promise(function (resolve, reject) {
-                if(res == fromId){
+                if (res == fromId) {
                     console.log('------------fromId与fromRole一致-----------');
                     resolve(true);
-                }else {
+                } else {
                     console.log('------------fromId与fromRole不一致-----------');
                     reject(new Error('fromId与fromRole不一致'));
                 }
