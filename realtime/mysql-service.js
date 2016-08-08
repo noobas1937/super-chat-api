@@ -8,6 +8,25 @@ db.on('error', function (error) {
     console.error(error);
 });
 
+exports.getUserIdByRoleId = function (roleId) {
+    return new Promise(function (resolve, reject) {
+        db.query('SELECT user_id FROM role WHERE id = ?',  //此处选择user_id而非role_id作为key否则一个user可能有多个role导致重复收到消息
+            [roleId],
+            function (err, info) {
+                if(err){
+                    reject(err);
+                }else{
+                    if(info.length == 0){
+                        reject(new Error('roleId not found'));
+                    }else {
+                        resolve(info[0].user_id);
+                    }
+                }
+            });
+    });
+}
+
+
 
 /**
  * 得到一个讨论组的所有成员
