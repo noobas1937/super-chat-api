@@ -21,7 +21,8 @@ socket.on('message', function (msg) {
 });
 
 var filters = {
-    groupId: 'test-test-test-test-test'
+    toRole: 'test-test-test-test-test',
+    affairId: 'zzzzzz'
 }
 
 socket.emit('mark_read_time', '9ed3838e-6242-4df9-b5b9-b64b47f37e85', filters);
