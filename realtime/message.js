@@ -84,7 +84,7 @@ exports.markReadTime = function (userId, filters) {
 exports.getUnreadMessageCount = function (userId, filters) {
     return new Promise(function (resolve, reject) {
         var timeFilters = new Object();
-        var keys = filters.keys();
+        var keys = _.keys(filters);
         _.each(keys, function(key){
             timeFilters[key] = filters[key];
         });
