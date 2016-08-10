@@ -32,7 +32,7 @@ exports.findMessage = function (limit, filters, endTime, beginTime) {
         console.log('----find filter-----');
         console.log(query);
 
-        Message.find(query).sort({'timestamp' : -1}).limit(limit).maxTime(1000).exec(function (err, records) {
+        Message.find(query).sort({'timestamp' : 1}).limit(limit).maxTime(1000).exec(function (err, records) {
             if(err){
                 reject(err);
             }else{
