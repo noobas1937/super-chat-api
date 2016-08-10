@@ -18,7 +18,7 @@ exports.findMessage = function (limit, filters, endTime, beginTime) {
         }
         var query = {};
         if(beginTime == undefined){
-            beginTime = Long(0);
+            beginTime = Number(0);
         }
         query.timestamp = {'$gte': beginTime, '$lte': endTime};  //TODO 防御式编程以及确定timestamp的格式
 
@@ -28,6 +28,9 @@ exports.findMessage = function (limit, filters, endTime, beginTime) {
                 query[key] = filters[key];
             });
         }
+
+        console.log('----find filter-----');
+        console.log(query);
 
         Message.find(query).sort([['timestamp', 'descending']]).limit(limit).maxTime(1000).exec(function (err, records) {
             if(err){
