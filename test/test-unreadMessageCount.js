@@ -3,7 +3,7 @@
  */
 
 var io = require('socket.io-client');
-var socket = io.connect('ws://localhost:3000');
+var socket = io.connect('ws://192.168.1.100:3000');
 socket.on("connect", function () {
     console.log('connect to server');
 });
@@ -20,7 +20,7 @@ socket.on('peers_status_response', function (res) {
 });
 
 
-socket.emit('unread_message_count', '123', '9ed3838e-6242-4df9-b5b9-b64b47f37e85', {'toRole': 'aa8af1fa-bdde-4ecb-a87b-6bcfa91b5ce3', 'affairId' : '71d97697-b455-4ea3-b112-45d35d7b96ea'});
+socket.emit('unread_message_count', '123', '9ed3838e-6242-4df9-b5b9-b64b47f37e85', {'toRole': 'ea0ee39c-3ebf-45f2-8c34-7a594def2150', 'affairId' : '71d97697-b455-4ea3-b112-45d35d7b96ea'});
 
 socket.on('response', function (res) {
     if(res.requestId = 123) {

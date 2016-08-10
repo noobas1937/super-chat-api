@@ -10,13 +10,16 @@ var models = require('./models'),
  * @param filters
  * @returns {Promise}
  */
-exports.findMessage = function (beginTime, endTime, limit, filters) {
+exports.findMessage = function (limit, filters, endTime, beginTime) {
     return new Promise(function (resolve, reject) {
         limit = limit || 20;
         if(limit > 100){
             limit = 100;
         }
         var query = {};
+        if(beginTime == undefined){
+            beginTime = Long(0);
+        }
         query.timestamp = {'$gte': beginTime, '$lte': endTime};  //TODO 防御式编程以及确定timestamp的格式
 
         if(_.isObject(filters)){
