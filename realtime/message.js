@@ -32,7 +32,7 @@ exports.findMessage = function (limit, filters, endTime, beginTime) {
         console.log('----find filter-----');
         console.log(query);
 
-        Message.find(query).sort([['timestamp', 'descending']]).limit(limit).maxTime(1000).exec(function (err, records) {
+        Message.top(query).sort([['timestamp', 'descending']]).limit(limit).maxTime(1000).exec(function (err, records) {
             if(err){
                 reject(err);
             }else{
@@ -106,7 +106,7 @@ exports.getUnreadMessageCount = function (userId, filters) {
                     console.log('-----------查询未读消息时发生错误--------');
                     reject(error);
                 }else{
-                        Message.find(filters).limit(100).exec(function (error, msg) {
+                        Message.top(filters).limit(100).exec(function (error, msg) {
                             if(error){
                                 reject(error);
                             }else{
