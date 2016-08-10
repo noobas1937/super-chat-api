@@ -210,6 +210,8 @@ exports.handleNewChannel = function (socket) {
             //给要转发的消息加上时间戳
             var serverTimestamp = new Date();
             if (msgType == 1) {//单人聊天
+                var key = getCacheContentUtil(fromRole, toRole);
+                msg['key'] = key;
                 mysqlService.getUserIdByRoleId(toRole)
                     .then(function (res) {//获取toRole的userId
                         message.toUserId = res;
@@ -437,3 +439,13 @@ exports.clearChannel = function (ch) {
         delete onlineChannels[ch.id];
     }
 }
+
+/**
+ * 比较roleId的简单工具方法
+ * @param roleId_1
+ * @param roleId_2
+ * @returns {string}
+ */
+function getCacheContentUtil(roleId_1, roleId_2){
+    return roleId_1 <= roleId_2 ? (roleId_1 + '@' + roleId_2) : (roleId_2 + '@' + roleId_1);
+};

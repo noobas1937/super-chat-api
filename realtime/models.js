@@ -13,6 +13,7 @@ var Schema = mongoose.Schema;
 //TODO 针对后期的查询做索引优化(目前Index的使用比较粗略)以及原系统的filter的使用策略暂时还不够明确
 var MessageSchema = new Schema({
     type : {type: String, index: true},  //用于存储消息的类型提高信息检索的效率
+    key : String, //用于单人聊天查询
     subType: String,
     displayName: String,
     timestamp: Number,  //时间戳用于和时间有关的查询
