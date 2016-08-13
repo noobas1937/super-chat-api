@@ -20,7 +20,7 @@ socket.on('peers_status_response', function (res) {
 });
 
 
-socket.emit('find_message', '123', 1468226132840, 1469000374722, 10, {});
+socket.emit('find_message', '123',10, {}, Date.now());
 
 socket.on('response', function (res) {
     if(res.requestId = 123) {
