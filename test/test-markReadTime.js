@@ -1,5 +1,5 @@
 var io = require('socket.io-client');
-var socket = io.connect('ws://localhost:3000');
+var socket = io.connect('ws://192.168.1.100:3000');
 socket.on("connect", function () {
     console.log('connect to server');
 });
@@ -21,7 +21,7 @@ socket.on('message', function (msg) {
 });
 
 var filters = {
-    toRole: 'test-test-test-test-test',
+    key : 'key-value',
     affairId: 'zzzzzz'
 }
 

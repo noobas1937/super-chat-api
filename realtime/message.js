@@ -57,6 +57,9 @@ exports.markReadTime = function (userId, filters) {
             });
         }
         var lastReadTime = new LastReadTime(data);
+        console.log('--------mark read time begin-----------');
+        console.log(lastReadTime);
+        console.log('--------mark read time end-----------');
         lastReadTime['timestamp'] = Date.now();
         LastReadTime.find(filters, function(error, res){
             if(error){
