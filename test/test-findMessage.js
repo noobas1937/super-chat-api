@@ -20,11 +20,11 @@ socket.on('peers_status_response', function (res) {
 });
 
 var filters = {
-    'fromRole' : 'ea0ee39c-3ebf-45f2-8c34-7a594def2150',
-    'toRole' : 'aa8af1fa-bdde-4ecb-a87b-6bcfa91b5ce3'
+    'key' : 'aa8af1fa-bdde-4ecb-a87b-6bcfa91b5ce3@ea0ee39c-3ebf-45f2-8c34-7a594def2150'
+
 };
 
-socket.emit('find_message', '123', 20, filters, Date.now());
+socket.emit('find_message', '123', 20, filters, 1471229629823);
 
 socket.on('response', function (res) {
     if(res.requestId = 123) {

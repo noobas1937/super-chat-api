@@ -100,7 +100,7 @@ exports.getUnreadMessageCount = function (userId, filters) {
         timeFilters.userId = userId;
         exports.getLastReadTime(timeFilters).then(function (res) {
             var lastReadTime = res;
-            filters.timestamp = {'$gte': lastReadTime, '$lte': Date.now()};
+            filters.timestamp = {'$gte': lastReadTime, '$lt': Date.now()};
             console.log('-----------开始查询未读消息数量--------');
             console.log(filters);
             console.log('-----------以上为查询的filter--------');
