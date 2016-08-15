@@ -337,8 +337,8 @@ exports.handleNewChannel = function (socket) {
      * @param limit 条数
      * @param filters 筛选条件
      */
-    socket.on('find_message', function (requestId, beginTime, endTime, limit, filters) {
-        messageService.findMessage(beginTime, endTime, limit, filters)
+    socket.on('find_message', function (requestId, limit, filters, endTime, beginTime) {
+        messageService.findMessage(limit, filters, endTime, beginTime)
             .then(function (res) {
                 res.sort(function (a, b) {
                     return a['timestamp'] - b['timestamp'];
