@@ -20,7 +20,7 @@ exports.findMessage = function (limit, filters, endTime, beginTime) {
         if(beginTime == undefined){
             beginTime = Number(0);
         }
-        query.timestamp = {'$gte': beginTime, '$lte': endTime};  //TODO 防御式编程以及确定timestamp的格式
+        query.timestamp = {'$gte': beginTime, '$lt': endTime};  //TODO 防御式编程以及确定timestamp的格式
 
         if(_.isObject(filters)){
             var keys = _.keys(filters);
@@ -100,7 +100,7 @@ exports.getUnreadMessageCount = function (userId, filters) {
         timeFilters.userId = userId;
         exports.getLastReadTime(timeFilters).then(function (res) {
             var lastReadTime = res;
-            filters.timestamp = {'$gte': lastReadTime, '$lt': Date.now()};
+            filters.timestamp = {'$gt': lastReadTime, '$lte': Date.now()};
             console.log('-----------开始查询未读消息数量--------');
             console.log(filters);
             console.log('-----------以上为查询的filter--------');
