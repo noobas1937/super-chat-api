@@ -340,6 +340,9 @@ exports.handleNewChannel = function (socket) {
     socket.on('find_message', function (requestId, beginTime, endTime, limit, filters) {
         messageService.findMessage(beginTime, endTime, limit, filters)
             .then(function (res) {
+                res.sort(function (a, b) {
+                    return a['timestamp'] - b['timestamp'];
+                });
                 socket.emit('response', {'requestId': requestId, 'list': res});
             }, function (error) {
                 socket.emit('response', {'requestId': requestId, 'error': error});

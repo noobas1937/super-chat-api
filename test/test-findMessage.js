@@ -3,7 +3,7 @@
  */
 
 var io = require('socket.io-client');
-var socket = io.connect('ws://localhost:3000');
+var socket = io.connect('ws://192.168.1.100:3000');
 socket.on("connect", function () {
     console.log('connect to server');
 });
@@ -19,8 +19,12 @@ socket.on('peers_status_response', function (res) {
     console.log(res);
 });
 
+var filters = {
+    'fromRole' : 'ea0ee39c-3ebf-45f2-8c34-7a594def2150',
+    'toRole' : 'aa8af1fa-bdde-4ecb-a87b-6bcfa91b5ce3'
+};
 
-socket.emit('find_message', '123',10, {}, Date.now());
+socket.emit('find_message', '123', 20, filters, Date.now());
 
 socket.on('response', function (res) {
     if(res.requestId = 123) {
