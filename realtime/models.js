@@ -31,8 +31,7 @@ var MessageSchema = new Schema({
 
 var LastReadTimeSchema = new Schema({
     userId : String,
-    fromRole : String,
-    toRole: String,
+    key : String,
     affairId: String,
     groupId: String,
     timestamp: Number
