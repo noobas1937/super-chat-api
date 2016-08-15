@@ -17,10 +17,7 @@ exports.findMessage = function (limit, filters, endTime, beginTime) {
             limit = 100;
         }
         var query = {};
-        if(beginTime == undefined){
-            beginTime = Number(0);
-        }
-        query.timestamp = {'$gte': beginTime, '$lt': endTime};  //TODO 防御式编程以及确定timestamp的格式
+        query.timestamp = {'$gte': beginTime || Number(0), '$lt': endTime};  //TODO 防御式编程以及确定timestamp的格式
 
         if(_.isObject(filters)){
             var keys = _.keys(filters);
@@ -32,7 +29,7 @@ exports.findMessage = function (limit, filters, endTime, beginTime) {
         console.log('----find filter-----');
         console.log(query);
 
-        Message.find(query).sort([['timestamp', 'descending']]).limit(limit).maxTime(1000).exec(function (err, records) {
+        Message.find(query).sort([['timestamp', 'descending']]).limit(limit).exec(function (err, records) {
             if(err){
                 reject(err);
             }else{
