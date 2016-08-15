@@ -3,7 +3,7 @@
  */
 
 var io = require('socket.io-client');
-var socket = io.connect('ws://localhost:3000');
+var socket = io.connect('ws://192.168.1.100:3000');
 socket.on("connect", function () {
     console.log('connect to server');
 });
@@ -22,5 +22,12 @@ socket.on('peers_status_response', function (res) {
 socket.on('message', function (msg) {
     console.log('收到消息:');
     console.log(msg);
+});
+
+socket.on('response', function (res) {
+        console.log('--------------收到find_message------------');
+        console.log(res);
+        console.log('--------------收到find_message------------');
+
 });
 

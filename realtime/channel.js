@@ -385,20 +385,20 @@ exports.handleNewChannel = function (socket) {
         socket.emit('response', requestId, _.keys(onlineChannels).length);
     });
 
-    /**
-     * 查看peer的在线状态
-     */
-    socket.on('peers_status', function (requestId, peers) {
-        var result = [];
-        _.each(peers, function (peer) {
-            if (_.isArray(peerChannels[peer] && peerChannels[peer].length > 0)) {
-                result.push(true);
-            } else {
-                result.push(false);
-            }
-        });
-        socket.emit('response', requestId, result);
-    });
+    // /**
+    //  * 查看peer的在线状态
+    //  */
+    // socket.on('peers_status', function (requestId, peers) {
+    //     var result = [];
+    //     _.each(peers, function (peer) {
+    //         if (_.isArray(peerChannels[peer] && peerChannels[peer].length > 0)) {
+    //             result.push(true);
+    //         } else {
+    //             result.push(false);
+    //         }
+    //     });
+    //     socket.emit('response', requestId, result);
+    // });
 
     //离线事件
     socket.on('disconnect', function () {

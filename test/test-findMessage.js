@@ -24,7 +24,7 @@ var filters = {
 
 };
 
-socket.emit('find_message', '123', 20, filters, Date.now());
+socket.emit('find_message', '123', 20, filters, 1801245278837);
 
 socket.on('response', function (res) {
     if(res.requestId = 123) {
