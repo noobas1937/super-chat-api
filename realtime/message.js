@@ -109,6 +109,7 @@ exports.getUnreadMessageCount = function (userId, filters) {
                     console.log('-----------查询未读消息时发生错误--------');
                     reject(error);
                 }else{
+                        delete filters.timestamp;
                         Message.find(filters).sort([['timestamp', 'descending']]).limit(1).exec(function (error, msg) {
                             if(error){
                                 reject(error);
