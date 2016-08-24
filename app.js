@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+var netService = require('./realtime/net');
+
 var app = express();
 
 // view engine setup
@@ -55,6 +57,8 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
+netService.init();
 
 require('./util/betterjs');
 

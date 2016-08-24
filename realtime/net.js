@@ -6,7 +6,7 @@ var net = require('net'),
 require('../util/betterjs');
 
 
-var hostIpList = ['localhost', 'localhost1', 'localhost2'];
+var hostIpList = ['192.168.1.132', '192.168.1.100'];
 var server;
 
 
@@ -23,6 +23,7 @@ exports.init = function () {
     _.each(hostIpList, function (ip) {
         var client = net.connect({host: ip, port: 8888}, function () {
             //TODO 处理连接
+            console.log('连接服务器host:' + ip + 'port: 8888成功!');
             peerConnections[ip] = client;
         });
         client.on('data', function (data) {
@@ -50,7 +51,10 @@ function createServer(){
         var remoteAddr = sock.remoteAddress;
         var remotePort = sock.remotePort;
 
-        console.log('-----------new socket connected-----------');
+        //从IpV6地址获得IpV4地址
+        remoteAddr = remoteAddr.split(':')[3];
+
+        console.log('-----------信息如下的客户端连接到当前服务器-----------');
         console.log(sock);
         console.log(remoteAddr);
         console.log(remotePort);
@@ -65,7 +69,7 @@ function createServer(){
 }
 
 
-exports.init();
+// exports.init();
 
 
 
