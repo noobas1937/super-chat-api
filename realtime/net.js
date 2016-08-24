@@ -23,7 +23,7 @@ exports.init = function () {
     _.each(hostIpList, function (ip) {
         var client = net.connect({host: ip, port: 8888}, function () {
             //TODO 处理连接
-            console.log('连接服务器host:' + ip + 'port: 8888成功!');
+            console.log('Net连接到host: ' + ip + ' port: 8888成功!');
             peerConnections[ip] = client;
         });
         client.on('data', function (data) {
@@ -54,17 +54,12 @@ function createServer(){
         //从IpV6地址获得IpV4地址
         remoteAddr = remoteAddr.split(':')[3];
 
-        console.log('-----------信息如下的客户端连接到当前服务器-----------');
-        console.log(sock);
-        console.log(remoteAddr);
-        console.log(remotePort);
-        console.log('------------------------------------------');
         sock.write(JSON.stringify(msg));
         peerConnections[remoteAddr] = sock;
 
     });
     server.listen(8888, function () {
-
+        console.log('本机开启Net服务器post: ' + commonUtils.getIpAddress() + ' port: 8888成功!');
     });
 }
 
