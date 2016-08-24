@@ -54,7 +54,18 @@ function createServer(){
         //从IpV6地址获得IpV4地址
         remoteAddr = remoteAddr.split(':')[3];
 
+
+        sock.on('data', function (data) {
+            var msg = JSON.parse(data);
+
+            channelService.sendMessageToPeer(msg, msg['toUserId']);
+            console.log('发送消息toUserId: ' + msg['toUserId']);
+            // channelService.sendMessageToAffairPeer()
+        });
+
         peerConnections[remoteAddr] = sock;
+
+
 
     });
     server.listen(8888, function () {

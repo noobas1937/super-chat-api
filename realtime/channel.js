@@ -23,6 +23,8 @@ var onlineChannels = exports.onlineChannels = {};
 exports.sendMessageToPeer = function (message, toPeerId) {
     if(!netService.checkHost(toPeerId)){
         netService.sendMessage(message);
+        console.log('--------被发送的用户不在当前主机上-----------');
+        return;
     }
     return new Promise(function (resolve, reject) {
         var chs = peerChannels[toPeerId];
