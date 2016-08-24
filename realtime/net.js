@@ -48,10 +48,12 @@ var msg = {
 function createServer(){
     server = net.createServer(function (sock) {
         var remoteAddr = sock.remoteAddress;
+        var remotePort = sock.remotePort;
 
         console.log('-----------new socket connected-----------');
         console.log(sock);
         console.log(remoteAddr);
+        console.log(remotePort);
         console.log('------------------------------------------');
         sock.write(JSON.stringify(msg));
         peerConnections[remoteAddr] = sock;

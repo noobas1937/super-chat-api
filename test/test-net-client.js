@@ -1,5 +1,5 @@
 var net = require('net');
-var client = net.connect({port: 8888}, function() {
+var client = net.connect({host: '192.168.1.132', port: 8888}, function() {
     console.log('连接到服务器！');
 });
 client.on('error',function () {
@@ -7,7 +7,8 @@ client.on('error',function () {
     console.log(client);
 });
 client.on('data', function(data) {
-    console.log(data.toString());
+    var msg = JSON.parse(data);
+    console.log(msg);
     client.end();
 });
 client.on('end', function() {
