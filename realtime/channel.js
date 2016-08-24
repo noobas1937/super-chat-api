@@ -8,7 +8,8 @@ var mongoose = require('mongoose')
     , LastReadTime = require('./models').LastReadTime
     , messageService = require('./message')
     , push = require('../push/pushNotice/push')
-    , mysqlService = require('./mysql-service');
+    , mysqlService = require('./mysql-service')
+    , netService = require('./net');
 
 //在线用户的所有channelId(一个用户可能多处登录
 var peerChannels = exports.peerChannels = {};
@@ -20,6 +21,9 @@ var onlineChannels = exports.onlineChannels = {};
  * 给单个人发送信息
  */
 exports.sendMessageToPeer = function (message, toPeerId) {
+    if(!netService.checkHost(toPeerId)){
+        netService.sendMessage(message);
+    }
     return new Promise(function (resolve, reject) {
         var chs = peerChannels[toPeerId];
         if (_.isArray(chs)) { //如果这人个在线
